@@ -1,0 +1,123 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+
+\usepackage[margin=2.5cm]{geometry}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{tabularx}
+\usepackage{verbatim}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\title{\vspace*{5cm} \textbf{Dokumentacja funkcjonalna projektu}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\vspace*{4cm}
+\tableofcontents
+
+\newpage
+
+\section{Opis projektu}
+\subsection{Cel i założenia projektu}
+
+Celem projektu jest napisanie programu w języku C, służącego do określenia współrzędnych wierzchołków grafu na płaszczyźnie 2D na podstawie pliku tekstowego podanego jako argument wywołania. Określone współrzędne mają spełniać ideę grafu planarnego -- grafu, którego krawędzie nie przecinają się w żadnym punkcie.
+
+\subsection{Realizowane funkcje}
+Aplikacja udostępnia użytkownikowi następujące funkcje:
+\begin{itemize}
+    \item Wczytywanie i sprawdzanie pliku tekstowego, w którym znajduje się definicja grafu.
+    \item Obliczanie współrzędnych X i Y dla każdego wierzchołka, tak aby spełniały założenia grafu planarnego przy użyciu wybranych algorytmów.
+    \item Zapisywanie wyliczonych współrzędnych do pliku wyjściowego w formacie tekstowym.
+    \item Możliwość zapisania wyników do pliku w formacie binarnym (wymuszana za pomocą opcjonalnej flagi).
+    \item Wykrywanie i reagowanie na błędy (np. brak pliku wejściowego) poprzez wyświetlanie ostrzeżeń i zwracanie kodów błędu.
+\end{itemize}
+
+\section{Specyfikacja wejścia/wyjścia}
+
+\subsection{Plik wejściowy}
+
+Dane wejściowe programu przekazywane są za pomocą pliku tekstowego. Zawiera on listę wszystkich krawędzi grafu analizowanego przez program. Każda linia pliku zawiera 4 elementy oddzielone od siebie białymi znakami: nazwę krawędzi (ciąg znaków), identyfikator wierzchołka 1 (int), identyfikator wierzchołka 2 (int) oraz wagę krawędzi (double). \\Waga krawędzi jest to dowolna wartość zmiennoprzecinkowa, która może zostać wykorzystana do wyznaczenia długości danej krawędzi.
+
+\vspace{0.3cm}
+\textbf{Przykład prawidłowo sformatowanego pliku wejściowego:}
+\begin{verbatim}
+AB 1 2 1
+BC 2 3 1
+CD 3 4 1
+DB 4 2 1.407
+\end{verbatim}
+
+\subsection{Plik wyjściowy}
+
+Program jako wyjście generuje plik tekstowy lub binarny, zawierający wyliczone, spełniające treść polecenia współrzędne wierzchołków grafu. Każda linia pliku wyjściowego zawiera: identyfikator wierzchołka zgodny z plikiem wejściowym (int), współrzędna x (double), współrzędna y (double). Plik ten ma służyć do przedstawienia wizualizacji grafu za pomocą programu w języku Java, w drugiej części projektu.
+
+\vspace{0.3cm}
+\textbf{Przykład struktury pliku wyjściowego (tekstowego):}
+\begin{verbatim}
+1 0.0 0.0
+2 1.0 0.0
+3 1.0 1.0
+4 0.0 1.0
+\end{verbatim}
+
+\section{Instrukcja obsługi programu}
+
+\subsection{Parametry wywołania (flagi)}
+Aplikacja działa w trybie konsolowym. Do sterowania programem służą flagi podawane jako argumenty przy uruchomieniu. 
+
+Lista dostępnych flag wraz z dopuszczalnymi wartościami:
+\begin{itemize}
+   \item \textbf{-o <ścieżka>} - Ścieżka pliku wyjściowego (output). Parametr \textbf{opcjonalny}. Ścieżką może być dowolna poprawna nazwa pliku, który program ma utworzyć (np. wynik.txt). Bez użycia flagi, program automatycznie zapisze dane wyjściowe do pliku "output.txt".
+    \item \textbf{-a} - Wybór algorytmu wyznaczającego współrzędne. Parametr \textbf{opcjonalny}. 
+    Bez użycia flagi domyślnie skorzystamy z pierwszego algorytmu, zastosowanie jej zamieni algorytm na drugi.
+    \item \textbf{-b} - Flaga włączająca tryb zapisu binarnego \textbf{"output.bin"}. Parametr \textbf{opcjonalny}. Jeśli flaga nie zostanie podana, program generuje plik tekstowy.
+\end{itemize}
+
+\subsection{Przykłady uruchomienia}
+Program można skonfigurować na kilka różnych sposobów.
+
+\vspace{0.3cm}
+\textbf{Sposoby konfiguracji programu:}\\
+\textbf{1) ./a.out} - 
+Wywołanie programu bez żadnych dodatkowych wytycznych wyświetli krótką instrukcje z wszystkimi flagami, ich opisami oraz sposobem użycia.\\\\
+\textbf{2) ./a.out <plikWejsciowy.txt>}\\
+Przy użyciu tylko pliku wejściowego, program skorzysta z algorytmu pierwszego i zapisze wynik do pliku wyjściowego "output.txt".\\\\
+\textbf{3) ./a.out <plikWejściowy.txt -o wyjscie.bin/.txt -a}\\
+Przy skorzystaniu z flag -o i -a, graf zapisze sie do podanego pliku jako plik tekstowy albo binarny w zależności od końcówki oraz program skorzysta z drugiego algorytmu.\\\
+    \textbf{3.1)}Flagę -b używamy, gdy nie chcemy podawać pliku wyjściowego, ale chcemy zmienić tryb zapisu: \
+\textbf{./a.out <plikWejściowy.txt -a -b}\\
+
+
+\subsection{Sytuacje wyjątkowe i kody powrotu}
+W celu łatwiejszej diagnostyki, program wykrywa sytuacje błędne, informuje o nich użytkownika i kończy działanie zwracając odpowiedni kod. 
+
+\begin{itemize}
+    \item \textbf{Kod powrotu: 0} - Poprawne zakończenie działania programu. Współrzędne zostały pomyślnie wyliczone i zapisane.
+    
+    \item \textbf{Kod powrotu: 1} - Błąd odczytu danych wejściowych. Sytuacja występuje, gdy podany plik wejściowy nie istnieje lub brak do niego dostępu.\\
+    \textit{Komunikat:} \texttt{Błąd: Nie można otworzyć pliku wejściowego.}
+    
+    \item \textbf{Kod powrotu: 2} - Nieprawidłowy format danych. Sytuacja występuje, gdy struktura pliku wejściowego nie zgadza się ze specyfikacją (np. zawiera litery zamiast liczb wag).\\
+    \textit{Komunikat:} \texttt{Błąd: Niepoprawny format danych w pliku wejściowym (linia X).}
+    
+    \item \textbf{Kod powrotu: 3} - Błąd zapisu danych wyjściowych. Sytuacja występuje, gdy program nie może utworzyć pliku wynikowego (np. brak miejsca na dysku).\\
+    \textit{Komunikat:} \texttt{Błąd: Nie udało się zapisać pliku wynikowego.}
+    \item \textbf{Kod powrotu: 4} - Błąd: Plik opisuje graf, który nie jest planarny. 
+    \textit{Komunikat:} \texttt{Błąd: Graf nie jest planarny.}
+\end{itemize}
+\end{document}
