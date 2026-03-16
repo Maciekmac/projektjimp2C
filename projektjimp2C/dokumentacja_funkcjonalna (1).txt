@@ -93,14 +93,18 @@ Program można skonfigurować na kilka różnych sposobów.
 
 \vspace{0.3cm}
 \textbf{Sposoby konfiguracji programu:}\\
-\textbf{1) ./a.out} - 
-Wywołanie programu bez żadnych dodatkowych wytycznych wyświetli krótką instrukcje z wszystkimi flagami, ich opisami oraz sposobem użycia.\\\\
-\textbf{2) ./a.out <plikWejsciowy.txt>}\\
-Przy użyciu tylko pliku wejściowego, program skorzysta z algorytmu pierwszego i zapisze wynik do pliku wyjściowego "output.txt".\\\\
-\textbf{3) ./a.out <plikWejściowy.txt -o wyjscie.bin/.txt -a}\\
-Przy skorzystaniu z flag -o i -a, graf zapisze sie do podanego pliku jako plik tekstowy albo binarny w zależności od końcówki oraz program skorzysta z drugiego algorytmu.\\\
-    \textbf{3.1)}Flagę -b używamy, gdy nie chcemy podawać pliku wyjściowego, ale chcemy zmienić tryb zapisu: \
-\textbf{./a.out <plikWejściowy.txt -a -b}\\
+\begin{itemize}
+    \item[\textbf{1)}] \texttt{./a.out} -- Wywołanie programu bez żadnych dodatkowych wytycznych wyświetli krótką instrukcję z wszystkimi flagami, ich opisami oraz sposobem użycia.
+
+    \item[\textbf{2)}] \texttt{./a.out <plikWejsciowy.txt>} \\
+    Przy użyciu tylko pliku wejściowego, program skorzysta z algorytmu pierwszego i zapisze wynik do pliku wyjściowego \texttt{"output.txt"}.
+
+    \item[\textbf{3)}] \texttt{./a.out <plikWejsciowy.txt> -o wyjscie.bin/.txt -a} \\
+    Przy skorzystaniu z flag \texttt{-o} i \texttt{-a}, graf zapisze się do podanego pliku jako plik tekstowy albo binarny w zależności od końcówki, a program skorzysta z drugiego algorytmu.
+
+    \item[\textbf{3.1)}] Flagę \texttt{-b} używamy, gdy nie chcemy podawać pliku wyjściowego, ale chcemy zmienić tryb zapisu: \\ \textbf{\texttt{./a.out <plikWejsciowy.txt> -a -b}}
+\end{itemize}
+Do minimalnego, prawidłowego zadziałania programu niezbędne jest podanie pliku wejściowego na pierwszej pozycji (\textbf{./a.out <plikWejsciowy.txt>})
 
 
 \subsection{Sytuacje wyjątkowe i kody powrotu}
@@ -117,7 +121,7 @@ W celu łatwiejszej diagnostyki, program wykrywa sytuacje błędne, informuje o 
     
     \item \textbf{Kod powrotu: 3} - Błąd zapisu danych wyjściowych. Sytuacja występuje, gdy program nie może utworzyć pliku wynikowego (np. brak miejsca na dysku).\\
     \textit{Komunikat:} \texttt{Błąd: Nie udało się zapisać pliku wynikowego.}
-    \item \textbf{Kod powrotu: 4} - Błąd: Plik opisuje graf, który nie jest planarny. 
+    \item \textbf{Kod powrotu: 4} - Błąd: Plik opisuje graf, który nie jest planarny. \\
     \textit{Komunikat:} \texttt{Błąd: Graf nie jest planarny.}
 \end{itemize}
 \end{document}
