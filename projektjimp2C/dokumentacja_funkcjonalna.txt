@@ -16,21 +16,37 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 
-\title{\vspace*{4cm} \textbf{Dokumentacja funkcjonalna projektu}}
+\title{\vspace*{5cm} \textbf{Dokumentacja funkcjonalna projektu}}
 \author{Mikołaj Dulny \\ Maciej Maciejewski}
 \date{\today}
 
 \begin{document}
 
 \maketitle
+\thispagestyle{empty}
 
+\newpage
+
+\vspace*{4cm}
 \tableofcontents
 
 \newpage
 
 \section{Opis projektu}
 
-Celem projektu jest napisanie programu w języku C, służącego do określenia współrzędnych wierzchołków grafu na płaszczyźnie 2D na podstawie pliku tekstowego podanego jako argument wywołania. Określone współrzędne mają spełniać ideę grafu planarnego - grafu, którego krawędzie nie przecinają się w żadnym punkcie.
+\subsection{Cel i założenia projektu}
+
+Celem projektu jest napisanie programu w języku C, służącego do określenia współrzędnych wierzchołków grafu na płaszczyźnie 2D na podstawie pliku tekstowego podanego jako argument wywołania. Określone współrzędne mają spełniać ideę grafu planarnego -- grafu, którego krawędzie nie przecinają się w żadnym punkcie.
+
+\subsection{Realizowane funkcje}
+Aplikacja udostępnia użytkownikowi następujące funkcje:
+\begin{itemize}
+    \item Wczytywanie i sprawdzanie pliku tekstowego, w którym znajduje się definicja grafu.
+    \item Obliczanie współrzędnych X i Y dla każdego wierzchołka, tak aby spełniały założenia grafu planarnego przy użyciu wybranych algorytmów.
+    \item Zapisywanie wyliczonych współrzędnych do pliku wyjściowego w formacie tekstowym.
+    \item Możliwość zapisania wyników do pliku w formacie binarnym (wymuszana za pomocą opcjonalnej flagi).
+    \item Wykrywanie i reagowanie na błędy (np. brak pliku wejściowego) poprzez wyświetlanie ostrzeżeń i zwracanie kodów błędu.
+\end{itemize}
 
 \section{Specyfikacja wejścia/wyjścia}
 
@@ -59,4 +75,7 @@ Program jako wyjście generuje plik tekstowy lub binarny, zawierający wyliczone
 3 1.0 1.0
 4 0.0 1.0
 \end{verbatim}
+
+\section{Instrukcja obsługi programu}
+
 \end{document}
