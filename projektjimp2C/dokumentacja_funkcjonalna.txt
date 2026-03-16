@@ -1,0 +1,63 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+
+\usepackage[margin=2.5cm]{geometry}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{tabularx}
+\usepackage{verbatim}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\title{\vspace*{4cm} \textbf{Dokumentacja funkcjonalna projektu}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Opis projektu}
+
+Celem projektu jest napisanie programu w języku C, służącego do określenia współrzędnych wierzchołków grafu na płaszczyźnie 2D na podstawie pliku tekstowego podanego jako argument wywołania. Określone współrzędne mają spełniać ideę grafu planarnego - grafu, którego krawędzie nie przecinają się w żadnym punkcie.
+
+\section{Specyfikacja wejścia/wyjścia}
+
+\subsection{Plik wejściowy}
+
+Dane wejściowe programu przekazywane są za pomocą pliku tekstowego. Zawiera on listę wszystkich krawędzi grafu analizowanego przez program. Każda linia pliku zawiera 4 elementy oddzielone od siebie białymi znakami: nazwę krawędzi (ciąg znaków), identyfikator wierzchołka 1 (int), identyfikator wierzchołka 2 (int) oraz wagę krawędzi (double). \\Waga krawędzi jest to dowolna wartość zmiennoprzecinkowa, która może zostać wykorzystana do wyznaczenia długości danej krawędzi.
+
+\vspace{0.3cm}
+\textbf{Przykład prawidłowo sformatowanego pliku wejściowego:}
+\begin{verbatim}
+AB 1 2 1
+BC 2 3 1
+CD 3 4 1
+DB 4 2 1.407
+\end{verbatim}
+
+\subsection{Plik wyjściowy}
+
+Program jako wyjście generuje plik tekstowy lub binarny, zawierający wyliczone, spełniające treść polecenia współrzędne wierzchołków grafu. Każda linia pliku wyjściowego zawiera: identyfikator wierzchołka zgodny z plikiem wejściowym (int), współrzędna x (double), współrzędna y (double). Plik ten ma służyć do przedstawienia wizualizacji grafu za pomocą programu w języku Java, w drugiej części projektu.
+
+\vspace{0.3cm}
+\textbf{Przykład struktury pliku wyjściowego (tekstowego):}
+\begin{verbatim}
+1 0.0 0.0
+2 1.0 0.0
+3 1.0 1.0
+4 0.0 1.0
+\end{verbatim}
+
+\end{document}
