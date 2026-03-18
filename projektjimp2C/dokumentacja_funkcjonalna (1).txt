@@ -2,7 +2,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[polish]{babel}
-
+\usepackage{array}
 \usepackage[margin=2.5cm]{geometry}
 
 \usepackage[hidelinks]{hyperref}
@@ -81,18 +81,27 @@ Program jako wyjście generuje plik tekstowy lub binarny, zawierający wyliczone
 Aplikacja działa w trybie konsolowym. Do sterowania programem służą flagi podawane jako argumenty przy uruchomieniu. 
 
 Lista dostępnych flag wraz z dopuszczalnymi wartościami:
-\begin{itemize}
-   \item \textbf{-o <ścieżka>} - Ścieżka pliku wyjściowego (output). Parametr \textbf{opcjonalny}. Ścieżką może być dowolna poprawna nazwa pliku, który program ma utworzyć (np. wynik.txt). Bez użycia flagi, program automatycznie zapisze dane wyjściowe do pliku "output.txt".
-    \item \textbf{-a} - Wybór algorytmu wyznaczającego współrzędne. Parametr \textbf{opcjonalny}. 
-    Bez użycia flagi domyślnie skorzystamy z pierwszego algorytmu, zastosowanie jej zamieni algorytm na drugi.
-    \item \textbf{-b} - Flaga włączająca tryb zapisu binarnego \textbf{"output.bin"}. Parametr \textbf{opcjonalny}. Jeśli flaga nie zostanie podana, program generuje plik tekstowy.
-\end{itemize}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|c|>{\raggedright\arraybackslash}p{11cm}|}
+\hline
+\textbf{flaga} & \textbf{opis}\\
+\hline
+\texttt{-o <ścieżka>}  &  Ścieżka pliku wyjściowego (output). Ścieżką może być dowolna poprawna nazwa pliku, który program ma utworzyć (np. wynik.txt). Bez użycia flagi, program automatycznie zapisze dane wyjściowe do pliku "output.txt".\\
+\hline
+\texttt{-a} & Wybór algorytmu wyznaczającego współrzędne. Bez użycia flagi domyślnie skorzystamy z pierwszego algorytmu, zastosowanie jej zamieni algorytm na drugi.\\
+\hline
+\texttt{-b} & Flaga włączająca tryb zapisu binarnego "output.bin". Jeśli flaga nie zostanie podana, program generuje plik tekstowy.\\
+\hline
+\end{tabular}
+\end{table}
 
+\textit{Wszystkie flagi są opcjonalne, przykłady ich użycia znajdują się w kolejnym punkcie.}
 \subsection{Przykłady uruchomienia}
-Program można skonfigurować na kilka różnych sposobów.
-
+Program można skonfigurować na kilka różnych sposobów.\\
+\textbf{Sposoby konfiguracji programu:}
 \vspace{0.3cm}
-\textbf{Sposoby konfiguracji programu:}\\
 \begin{itemize}
     \item[\textbf{1)}] \texttt{./a.out} -- Wywołanie programu bez żadnych dodatkowych wytycznych wyświetli krótką instrukcję z wszystkimi flagami, ich opisami oraz sposobem użycia.
 
@@ -110,18 +119,23 @@ Do minimalnego, prawidłowego zadziałania programu niezbędne jest podanie plik
 \subsection{Sytuacje wyjątkowe i kody powrotu}
 W celu łatwiejszej diagnostyki, program wykrywa sytuacje błędne, informuje o nich użytkownika i kończy działanie zwracając odpowiedni kod. 
 
-\begin{itemize}
-    \item \textbf{Kod powrotu: 0} - Poprawne zakończenie działania programu. Współrzędne zostały pomyślnie wyliczone i zapisane.
-    
-    \item \textbf{Kod powrotu: 1} - Błąd odczytu danych wejściowych. Sytuacja występuje, gdy podany plik wejściowy nie istnieje lub brak do niego dostępu.\\
-    \textit{Komunikat:} \texttt{Błąd: Nie można otworzyć pliku wejściowego.}
-    
-    \item \textbf{Kod powrotu: 2} - Nieprawidłowy format danych. Sytuacja występuje, gdy struktura pliku wejściowego nie zgadza się ze specyfikacją (np. zawiera litery zamiast liczb wag).\\
-    \textit{Komunikat:} \texttt{Błąd: Niepoprawny format danych w pliku wejściowym (linia X).}
-    
-    \item \textbf{Kod powrotu: 3} - Błąd zapisu danych wyjściowych. Sytuacja występuje, gdy program nie może utworzyć pliku wynikowego (np. brak miejsca na dysku).\\
-    \textit{Komunikat:} \texttt{Błąd: Nie udało się zapisać pliku wynikowego.}
-    \item \textbf{Kod powrotu: 4} - Błąd: Plik opisuje graf, który nie jest planarny. \\
-    \textit{Komunikat:} \texttt{Błąd: Graf nie jest planarny.}
-\end{itemize}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.5} % Zwiększa odstępy między wierszami dla lepszej czytelności
+\begin{tabular}{|c|>{\raggedright\arraybackslash}p{11cm}|}
+\hline
+\textbf{Kod powrotu} & \textbf{Opis} \\
+\hline
+\texttt{0} & Poprawne zakończenie działania programu. Współrzędne zostały pomyślnie wyliczone i zapisane.\\
+\hline
+\texttt{1} &  Błąd odczytu danych wejściowych. Sytuacja występuje, gdy podany plik wejściowy nie istnieje lub brak do niego dostępu. \textit{Komunikat:} \texttt{Błąd: Nie można otworzyć pliku wejściowego.}
+\\
+\hline
+\texttt{2} & Nieprawidłowy format danych. Sytuacja występuje, gdy struktura pliku wejściowego nie zgadza się ze specyfikacją (np. zawiera litery zamiast liczb wag). \textit{Komunikat:} \texttt{Błąd: Niepoprawny format danych w pliku wejściowym (linia X).}\\
+\hline
+\texttt{3} & Błąd zapisu danych wyjściowych. Sytuacja występuje, gdy program nie może utworzyć pliku wynikowego (np. brak miejsca na dysku). \textit{Komunikat:} \texttt{Błąd: Nie udało się zapisać pliku wynikowego.}
+\\
+\hline
+\end{tabular}
+\end{table}
 \end{document}
