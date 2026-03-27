@@ -2,7 +2,7 @@
 #include <string.h>
 #include "config.h" 
 
-void check_output(const char *filename, Config *config) { //Czyta końcówke pliku wyjściowego (.bin/.txt)
+int check_output(const char *filename, Config *config) { //Czyta końcówke pliku wyjściowego (.bin/.txt)
     size_t len = strlen(filename);
     
     
@@ -11,10 +11,14 @@ void check_output(const char *filename, Config *config) { //Czyta końcówke pli
         
         if (strcmp(ext, ".txt") == 0) {
             config->binary_mode = 0;
+	    return SUCCESS;
         } else if (strcmp(ext, ".bin") == 0) {
             config->binary_mode = 1;
+	    return SUCCESS;
         }
     }
+    fprintf(stderr, "Blad: Nieobslugiwany format pliku wyjsciowego. Uzyj .txt lub .bin\n");
+    return ERR_INVALID_EXT;
 } 
 
 int parse_arguments(int argc, char *argv[], Config *config) {
@@ -47,10 +51,13 @@ int parse_arguments(int argc, char *argv[], Config *config) {
 
     // Ustawienie domyślnych nazw plików wyjściowych
     if (config->output_file != NULL) {
-        check_output(config->output_file, config);
+        int check_status = check_output(config->output_file, config);
+        if (check_status != SUCCESS) {
+            return check_status;
+        }
     } else {
-        if (config->binary_mode) {
-            config->output_file = "output.bin";
+    	if (config->binary_mode) {
+        	config->output_file = "output.bin";
         } else {
             config->output_file = "output.txt";
         }

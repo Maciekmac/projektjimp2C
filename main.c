@@ -6,8 +6,11 @@
 int main(int argc, char *argv[]) {
     Config config;
 
-    if (!parse_arguments(argc, argv, &config)) {
+    int parse_status = parse_arguments(argc, argv, &config);
+    if (parse_status == 0) {
         return SUCCESS;
+    } else if (parse_status != 1) {
+        return parse_status;
     }
 
     FILE *in_file = fopen(config.input_file, "r");
