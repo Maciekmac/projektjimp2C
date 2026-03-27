@@ -136,6 +136,8 @@ W celu łatwiejszej diagnostyki, program wykrywa sytuacje błędne, informuje o 
 \texttt{3} & Błąd zapisu danych wyjściowych. Sytuacja występuje, gdy program nie może utworzyć pliku wynikowego (np. brak miejsca na dysku). \textit{Komunikat:} \texttt{Błąd: Nie udało się zapisać pliku wynikowego.}
 \\
 \hline
+\texttt{4} & Nieprawidłowy format pliku wyjściowego. Sytuacja występuje, gdy użytkownik wymusi zapis do pliku z rozszerzeniem innym niż \texttt{.txt} lub \texttt{.bin} (np. \texttt{-o plik.pdf}). \textit{Komunikat:} \texttt{Błąd: Nieobsługiwany format pliku wyjściowego. Użyj .txt lub .bin} \\
+\hline
 \end{tabular}
 \end{table}
 \end{document}
