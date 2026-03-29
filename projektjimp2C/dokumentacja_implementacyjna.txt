@@ -1,0 +1,76 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{array}
+\usepackage[margin=2.5cm]{geometry}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{tabularx}
+\usepackage{verbatim}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\title{\vspace*{5cm} \textbf{Dokumentacja implementacyjna projektu}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\vspace*{4cm}
+\tableofcontents
+
+\newpage
+
+\section{Cel dokumentu}
+
+\section{Podział projektu na moduły}
+
+\subsection{Moduł główny (main.c)}
+
+\subsection{Moduł konfiguracji (config.c, config.h)}
+
+\subsection{Moduł parsera (parser.c, parser.h)}
+
+\section{Szczegóły implementacyjne i struktury danych}
+
+\subsection{Struktury}
+
+\subsubsection{Struktura Config}
+
+\subsubsection{Struktura Edge}
+
+\subsubsection{Struktura Graph}
+
+\subsection{Zarządzanie pamięcią}
+
+\section{Logika i algorytmy obliczeniowe}
+
+\subsection{Mechanizm sprawdzania planarności}
+
+\subsection{Implementacja algorytmu 1}
+
+\subsection{Implementacja algorytmu 2}
+
+\section{Specyfikacja wejścia i wyjścia}
+
+\subsection{Odczyt danych}
+
+\subsection{Zapis w trybie tekstowym (.txt)}
+
+\subsection{Zapis w trybie binarnym (.bin)}
+
+\section{Obsługa błędów i kody wyjścia}
+
+\section{Proces kompilacji}
+\end{document}
