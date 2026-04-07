@@ -23,8 +23,8 @@ int load_graph(FILE *file, Graph *g){
         g->edges = realloc(g->edges, g->capacity * sizeof(Edge));
     }
     Edge *e = &g->edges[g->count];
-
-    int parsed = sscanf(line, "%63s %d %d %lf", e->name, &e->v1, &e->v2, &e->weight);
+    char garbage[2];
+    int parsed = sscanf(line, "%63s %d %d %lf %1s", e->name, &e->v1, &e->v2, &e->weight, garbage);
     if (parsed != 4) {
             fprintf(stderr, "Blad formatu w pliku wejsciowym (linia %d): %s\n", line_num, line);
             return ERR_INVALID_FORMAT;
