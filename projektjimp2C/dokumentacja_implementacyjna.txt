@@ -1,0 +1,120 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{array}
+\usepackage[margin=2.5cm]{geometry}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{tabularx}
+\usepackage{verbatim}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\title{\vspace*{5cm} \textbf{Dokumentacja implementacyjna projektu}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\vspace*{4cm}
+\tableofcontents
+
+\newpage
+
+\section{Cel dokumentu}
+Dokument stanowi specyfikację implementacyjną programu służącego do analizy i przetwarzania grafów, reprezentowanych w postaci listy krawędzi. Dokumentacja opisuje architekturę rozwiązania, zastosowane struktury danych, mechanizmy zarządzania pamięcią, logikę parsowania argumentów wejściowych oraz szczegóły procesów wejścia/wyjścia. Dodatkowo dokument szczegółowo wyjaśnia algorytmy wykorzystywane do badania planarności grafu oraz wyznaczania współrzędnych jego wierzchołków.
+
+\section{Podział projektu na moduły}
+Program został zaprojektowany zgodnie z paradygmatem programowania modułowego w języku C, co zapewnia czytelność, łatwość w utrzymaniu i skalowalność kodu.
+
+\subsection{Moduł główny (\texttt{main.c})}
+Punkt wejścia do programu. Odpowiada za koordynację przepływu sterowania: wywołuje parser argumentów wiersza poleceń, inicjuje proces wczytywania grafu, a następnie steruje logiką wyboru odpowiedniego algorytmu. Na końcu dba o poprawne zamknięcie strumieni i zwolnienie zaalokowanej pamięci.
+
+\subsection{Moduł konfiguracji (\texttt{config.c}, \texttt{config.h})}
+Moduł odpowiedzialny za interpretację flag przekazywanych w terminalu. Obsługuje flagę \texttt{-a} (wybór alternatywnego algorytmu), flagę \texttt{-b} (wymuszenie zapisu binarnego) oraz flagę \texttt{-o} (określenie ścieżki pliku wyjściowego). Moduł ten posiada również logikę detekcji formatu zapisu na podstawie rozszerzenia pliku wyjściowego (np. nadpisanie trybu binarnego w przypadku podania pliku \texttt{.bin}).
+
+\subsection{Moduł parsera (\texttt{parser.c}, \texttt{parser.h})}
+Moduł realizujący bezpieczne wczytywanie danych z pliku wejściowego. Wykorzystuje dwuetapowe parsowanie: wczytanie całej linii do bufora za pomocą funkcji \texttt{fgets}, a następnie wyodrębnienie poszczególnych zmiennych za pomocą \texttt{sscanf}, oraz sprawdza obecność ewentualnych błędów w pliku.
+
+\section{Szczegóły implementacyjne i struktury danych}
+
+\subsection{Struktury}
+
+\subsubsection{Struktura \texttt{Config}}
+Przechowuje globalną konfigurację wykonania programu:
+\begin{itemize}
+    \item \texttt{char *input\_file} -- wskaźnik na ciąg znaków z nazwą pliku wejściowego.
+    \item \texttt{char *output\_file} -- wskaźnik na ścieżkę do pliku wyjściowego.
+    \item \texttt{int use\_algo\_2} -- flaga (0 lub 1) decydująca o wyborze algorytmu.
+    \item \texttt{int binary\_mode} -- flaga określająca format pliku wyjściowego.
+\end{itemize}
+
+\subsubsection{Struktura \texttt{Edge}}
+Reprezentuje pojedynczą krawędź grafu:
+\begin{itemize}
+    \item \texttt{char name[64]} -- identyfikator tekstowy krawędzi.
+    \item \texttt{int v1, v2} -- identyfikatory wierzchołków łączonych przez daną krawędź.
+    \item \texttt{double weight} -- waga krawędzi, służąca do obliczania dystansów.
+\end{itemize}
+
+\subsubsection{Struktura \texttt{Graph}}
+Struktura pełniąca rolę dynamicznego magazynu danych (kontenera) na krawędzie:
+\begin{itemize}
+    \item \texttt{Edge *edges} -- wskaźnik na początek tablicy elementów typu \texttt{Edge}.
+    \item \texttt{int count} -- rzeczywista liczba poprawnie załadowanych krawędzi.
+    \item \texttt{int capacity} -- aktualny, maksymalny rozmiar zaalokowanej tablicy.
+\end{itemize}
+
+\subsection{Zarządzanie pamięcią}
+Program używa techniki dynamicznego skalowania tablicy krawędzi. Graf inicjowany jest z pojemnością na 10 elementów (\texttt{malloc}). W momencie przekroczenia tej wartości, pamięć jest podwajana za pomocą funkcji \texttt{realloc} (\texttt{capacity *= 2}). Ogranicza to liczbę odwołań do systemu operacyjnego. Po zakończeniu pracy, struktura jest poprawnie czyszczona w dedykowanej funkcji \texttt{free\_graph}.
+
+\section{Logika i algorytmy obliczeniowe}
+
+\subsection{Mechanizm sprawdzania planarności}
+% TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU SPRAWDZAJĄCEGO PLANARNOŚĆ
+Mechanizm ten weryfikuje, czy wczytany graf można narysować na płaszczyźnie bez przecinania się krawędzi. Zaimplementowano podejście oparte na ... (DO UZUPEŁNIENIA).
+
+\subsection{Implementacja algorytmu 1}
+% TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU DOMYŚLNEGO
+Domyślny algorytm wyznaczania współrzędnych opiera się na ... (DO UZUPEŁNIENIA po napisaniu kodu).
+
+\subsection{Implementacja algorytmu 2}
+% TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU Z FLAGĄ -a
+Alternatywny algorytm, aktywowany flagą \texttt{-a}, wykorzystuje ... (DO UZUPEŁNIENIA po napisaniu kodu).
+
+\section{Specyfikacja wejścia i wyjścia}
+
+\subsection{Odczyt danych}
+Dane przyjmowane są w formacie tekstowym, gdzie każda linia składa się z 4 elementów oddzielonych białymi znakami (nazwa krawędzi, id wierzchołka 1, id wierzchołka 2, waga). Próba podania niewłaściwego typu danych (np. liter zamiast id) przerywa wczytywanie i zgłasza błąd z podaniem numeru wadliwej linii.
+
+\subsection{Zapis w trybie tekstowym (.txt)}
+Domyślny tryb pracy programu. Otwarcie pliku odbywa się poprzez \texttt{fopen} z atrybutem \texttt{"w"}. Wynikowy graf zapisywany jest w formacie ułatwiającym analizę wizualną.
+
+\subsection{Zapis w trybie binarnym (.bin)}
+Tryb wymuszany flagą \texttt{-b} lub podaniem pliku z rozszerzeniem \texttt{.bin}. Zapis korzysta z funkcji \texttt{fwrite} i atrybutu \texttt{"wb"}, kopiując bloki pamięci (np. zrzut struktury) bezpośrednio na dysk, co znacząco zmniejsza rozmiar pliku wyjściowego i przyspiesza jego późniejszy odczyt.
+
+\section{Obsługa błędów i kody wyjścia}
+Aplikacja rygorystycznie podchodzi do komunikacji błędów, zwracając do systemu operacyjnego zdefiniowane kody numeryczne:
+\begin{itemize}
+    \item \texttt{SUCCESS (0)} -- prawidłowe wykonanie operacji.
+    \item \texttt{ERR\_INPUT\_READ (1)} - brak dostępu do pliku wejściowego (np. zła ścieżka).
+    \item \texttt{ERR\_INVALID\_FORMAT (2)} -  Nieprawidłowy format danych wejściowych w pliku tekstowym.
+    \item \texttt{ERR\_OUTPUT\_WRITE (3)} - błąd otwarcia lub zapisu strumienia wyjściowego.
+    \item \texttt{ERR\_INVALID\_OUTPUT (4)} - Nieprawidłowy format pliku wyjściowego.
+\end{itemize}
+
+\section{Proces kompilacji}
+Proces budowania aplikacji został w pełni zautomatyzowany za pomocą narzędzia \texttt{make}. Plik \texttt{Makefile} kompiluje pliki źródłowe (\texttt{.c}) do plików obiektowych (\texttt{.o}) z wykorzystaniem flag restrykcyjnych \texttt{-Wall -Wextra}, co ułatwia wykrywanie potencjalnych błędów już na etapie kompilacji. Dodana reguła \texttt{make clean} pozwala na szybkie usunięcie plików tymczasowych oraz pliku wykonywalnego.
+
+\end{document}
