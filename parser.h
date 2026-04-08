@@ -6,6 +6,15 @@
 
 #define MAX_EDGE_NAME 64
 
+//Struktura pojedynczego wierzchołka
+typedef struct {
+    int id;         
+    double x;         
+    double y;         
+    double dx;        
+    double dy;      
+} Vertex;
+
 // Struktura pojedynczej krawędzi
 typedef struct {
     char name[MAX_EDGE_NAME];
@@ -18,7 +27,10 @@ typedef struct {
 typedef struct {
     Edge *edges;      
     int count;        
-    int capacity;     
+    int capacity;  
+    Vertex* vertices;
+    int vertex_count;
+    int vertex_capacity;
 } Graph;
 
 

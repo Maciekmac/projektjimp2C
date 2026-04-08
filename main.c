@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "parser.h" 
+#include "algorithms.h"
 
 int main(int argc, char *argv[]) {
     Config config;
@@ -32,7 +33,26 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Sukces! Wczytano %d krawedzi z pliku.\n", my_graph.count);
+    printf("Obliczam wspolrzedne algorytmem...\n"); //Uruchomienie algorytmów
+    if (config.use_algo_2) {
+        // TODO: Tutaj w przysz³oœci odpalimy algorytm 2 (flaga -a)
+        printf("Uzywam algorytmu alternatywnego (TODO).\n");
+    }
+    else {
+        // Domyœlny algorytm: Fruchterman-Reingold
+        // Przyjmujemy planszê 800x600 i robimy 100 kroków symulacji
+        algo_1_fruchterman_reingold(&my_graph, 800.0, 600.0, 100);
+    }
 
+    // Testujemy
+    printf("--- WYNIKI WSPOLRZEDNYCH ---\n");
+    for (int i = 0; i < my_graph.vertex_count; i++) {
+        printf("Wierzcholek %d: X=%.2f, Y=%.2f\n",
+            my_graph.vertices[i].id,
+            my_graph.vertices[i].x,
+            my_graph.vertices[i].y);
+    }
+    printf("----------------------------\n");
     
     free_graph(&my_graph);
 
