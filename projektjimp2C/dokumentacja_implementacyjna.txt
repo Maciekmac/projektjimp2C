@@ -86,8 +86,24 @@ Program używa techniki dynamicznego skalowania tablicy krawędzi. Graf inicjowa
 Mechanizm ten weryfikuje, czy wczytany graf można narysować na płaszczyźnie bez przecinania się krawędzi. Zaimplementowano podejście oparte na ... (DO UZUPEŁNIENIA).
 
 \subsection{Implementacja algorytmu 1}
-% TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU DOMYŚLNEGO
-Domyślny algorytm wyznaczania współrzędnych opiera się na ... (DO UZUPEŁNIENIA po napisaniu kodu).
+\texttt{Algorytm Fruchtermana-Reingolda}\\
+Domyślny algorytm wyznaczania współrzędnych opiera się na uproszczonym modelu siłowym. W tym podejściu graf analizowany jest jako wirtualny układ fizyczny. Wierzchołki traktowane są jak jednoimiennie naładowane cząstki, które nieustannie się odpychają, natomiast krawędzie pełnią rolę sprężyn przyciągających połączone ze sobą węzły.
+
+Celem algorytmu jest iteracyjne dążenie do stanu, w którym energia potencjalna całego układu jest minimalna. Przekłada się to na optymalne, równomierne i czytelne rozmieszczenie wierzchołków na płaszczyźnie 2D, z minimalną liczbą nakładających się na siebie elementów.
+
+W każdej iteracji dla par wierzchołków obliczane są wektory sił. Siła odpychająca $f_r$ (działająca między wszystkimi wierzchołkami) oraz siła przyciągająca $f_a$ (działająca tylko wzdłuż krawędzi) w zależności od aktualnej odległości $d$ między węzłami wyrażają się wzorami:
+
+$$f_r(d)=\frac{k^2}{d}$$
+
+$$f_a(d)=\frac{d^2}{k}$$
+
+Zmienna $k$ to współczynnik optymalnej odległości między wierzchołkami, definiowany wzorem:
+
+$$k=C\cdot\sqrt{\frac{A}{n}}$$
+
+gdzie $A$ to pole obszaru rysowania, $n$ to całkowita liczba wierzchołków w grafie, a $C$ to stała eksperymentalna dopasowująca siłę oddziaływań.
+
+Po wyznaczeniu wypadkowej sił dla każdego wierzchołka, algorytm aktualizuje ich pozycje. Aby zjawisko to nie prowadziło do nieskończonych oscylacji układu, zaimplementowano mechanizm analogiczny do symulowanego wyżarzania. Wprowadza on globalny parametr temperatury, który ogranicza maksymalne dozwolone przesunięcie wierzchołka w pojedynczym kroku. Początkowo temperatura jest wysoka, pozwalając na drastyczne zmiany w ułożeniu grafu, po czym w każdej iteracji ulega systematycznemu schłodzeniu. W końcowych fazach działania algorytmu wierzchołki ulegają jedynie drobnym, lokalnym korektom, aż do ostatecznej stabilizacji.
 
 \subsection{Implementacja algorytmu 2}
 % TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU Z FLAGĄ -a
