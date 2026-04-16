@@ -35,8 +35,9 @@ int main(int argc, char *argv[]) {
     printf("Sukces! Wczytano %d krawedzi z pliku.\n", my_graph.count);
     printf("Obliczam wspolrzedne algorytmem...\n"); //Uruchomienie algorytmów
     if (config.use_algo_2) {
-        // TODO: Tutaj w przysz³oœci odpalimy algorytm 2 (flaga -a)
-        printf("Uzywam algorytmu alternatywnego (TODO).\n");
+        // Odpalamy algorytm 2 - Tutte Embedding (flaga -a)
+        printf("Uzywam algorytmu alternatywnego Tutte Embedding.\n");
+	algo_2_tutte_embedding(&my_graph, 800.0, 600.0);
     }
     else {
         // Domyœlny algorytm: Fruchterman-Reingold

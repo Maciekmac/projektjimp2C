@@ -33,7 +33,7 @@ typedef struct {
     int vertex_capacity;
 } Graph;
 
-
+int get_or_add_vertex(Graph* g, int id);
 void init_graph(Graph *g);
 int load_graph(FILE *file, Graph *g);
 void free_graph(Graph *g);
