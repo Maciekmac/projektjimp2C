@@ -82,8 +82,15 @@ Program używa techniki dynamicznego skalowania tablicy krawędzi. Graf inicjowa
 \section{Logika i algorytmy obliczeniowe}
 
 \subsection{Mechanizm sprawdzania planarności}
-% TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU SPRAWDZAJĄCEGO PLANARNOŚĆ
-Mechanizm ten weryfikuje, czy wczytany graf można narysować na płaszczyźnie bez przecinania się krawędzi. Zaimplementowano podejście oparte na ... (DO UZUPEŁNIENIA).
+Mechanizm ten sprawdza, czy wczytany graf można narysować na płaskiej kartce tak, aby żadne linie (krawędzie) się nie przecinały. Ponieważ idealne algorytmy matematyczne badające tę właściwość są bardzo długie i skomplikowane, w projekcie postawiono na sprytne podejście inżynierskie. Użyto szybkiego testu opartego na dwóch zasadach geometrii:
+
+\begin{itemize}
+    \item \textbf{Reguła Eulera (Limit krawędzi):} Wynika z niej, że każdy płaski graf o $V \ge 3$ wierzchołkach ma odgórny limit połączeń wynoszący $E \le 3V - 6$. Algorytm w pierwszej kolejności sprawdza ten warunek. Jeśli krawędzi jest w pliku więcej, oznacza to zbyt duży "tłok" i program ze 100\% pewnością odrzuca planarność grafu.
+
+    \item \textbf{Warunek Kuratowskiego (Analiza połączeń):} Twierdzenie to mówi, że graf będzie się przecinał tylko wtedy, gdy schowa się w nim jedna z dwóch problematycznych struktur: $K_5$ (do której budowy potrzeba minimum 5 wierzchołków o 4 połączeniach) lub $K_{3,3}$ (wymagająca minimum 6 wierzchołków o 3 połączeniach). Nasz algorytm znacząco upraszcza ten problem. Zamiast szukać tych skomplikowanych kształtów, po prostu zlicza krawędzie wystające z każdego wierzchołka. Jeśli widzi, że brakuje odpowiednich elementów, by w ogóle złożyć takie nieplanarne struktury, to klasyfikuje graf jako bezpieczny (planarny).
+\end{itemize}
+
+Podejście to jest niezwykle "lekkie" dla procesora i pamięci (złożoność $O(V + E)$). Mimo że jest to metoda uproszczona (heurystyka), która w bardzo specyficznych, rzadkich układach może założyć planarność na wyrost, to w praktyce błyskawicznie odrzuca zdecydowaną większość zbyt gęstych grafów podawanych przez użytkownika.
 
 \subsection{Implementacja algorytmu 1}
 \texttt{Algorytm Fruchtermana-Reingolda}\\
