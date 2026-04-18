@@ -106,8 +106,34 @@ gdzie $A$ to pole obszaru rysowania, $n$ to całkowita liczba wierzchołków w g
 Po wyznaczeniu wypadkowej sił dla każdego wierzchołka, algorytm aktualizuje ich pozycje. Aby zjawisko to nie prowadziło do nieskończonych oscylacji układu, zaimplementowano mechanizm analogiczny do symulowanego wyżarzania. Wprowadza on globalny parametr temperatury, który ogranicza maksymalne dozwolone przesunięcie wierzchołka w pojedynczym kroku. Początkowo temperatura jest wysoka, pozwalając na drastyczne zmiany w ułożeniu grafu, po czym w każdej iteracji ulega systematycznemu schłodzeniu. W końcowych fazach działania algorytmu wierzchołki ulegają jedynie drobnym, lokalnym korektom, aż do ostatecznej stabilizacji.
 
 \subsection{Implementacja algorytmu 2}
-% TUTAJ ZNAJDZIE SIĘ OPIS ALGORYTMU Z FLAGĄ -a
-Alternatywny algorytm, aktywowany flagą \texttt{-a}, wykorzystuje ... (DO UZUPEŁNIENIA po napisaniu kodu).
+\texttt{Algorytm Tutte Embedding (metoda barycentryczna)}\\
+Alternatywny algorytm, aktywowany flagą \texttt{-a}, to algorytm oparty na metodzie Tutte'a. W odróżnieniu od algorytmu Fruchtermana-Reingolda, który opiera się na symulacji sił fizycznych, metoda Tutte'a pozwala na narysowanie grafu planarnego bez przecinających się krawędzi poprzez zablokowanie zewnętrznej ramki i ułożenie reszty wierzchołków w jej środku za pomocą wyliczania średniej (barycentrum).
+
+Działanie algorytmu podzieliliśmy na trzy główne etapy:
+
+\textbf{1. Znalezienie zewnętrznej ramki (DFS)}\\
+Żeby algorytm mógł zadziałać, musimy najpierw znaleźć w grafie cykl, który posłuży nam za zewnętrzną ramkę wielokąta. Wykorzystaliśmy do tego przeszukiwanie w głąb (DFS - Depth-First Search). Funkcja \texttt{dfs\_find\_cycle} przechodzi przez graf i szuka najdłuższego możliwego cyklu, oznaczając odwiedzane wierzchołki, żeby nie zapętlić się w nieskończoność. Ponieważ przeszukiwanie wszystkich ścieżek w dużych grafach mogłoby trwać zbyt długo, wprowadziliśmy proste zabezpieczenie optymalizacyjne: dla grafów powyżej 10 wierzchołków DFS startuje tylko z 10 pierwszych wierzchołków. Pozwala to na szybsze znalezienie kilku cykli, z których wybierany jest ten najdłuższy.
+
+\textbf{2. Rozmieszczenie i zamrożenie ramki na okręgu}\\
+Kiedy wyłonimy już wierzchołki tworzące najdłuższy cykl, oznaczamy je jako brzegowe w specjalnej tablicy (\texttt{is\_boundary = 1}). Następnie rozkładamy je równomiernie na obwodzie okręgu, używając podstawowych funkcji trygonometrycznych. Środek okręgu $(x_c, y_c)$ to środek obszaru rysowania, a jego promień $R$ to 40\% krótszego boku planszy. Dla każdego z $L$ wierzchołków w cyklu, jego pozycja wyliczana jest ze wzorów:
+
+$$x_i = x_c + R \cdot \cos\left(\frac{2\pi \cdot i}{L}\right)$$
+
+$$y_i = y_c + R \cdot \sin\left(\frac{2\pi \cdot i}{L}\right)$$
+
+Po ustaleniu tych pozycji, współrzędne wierzchołków z ramki zostają "zamrożone" i program nie będzie ich modyfikował w kolejnym etapie.
+
+\textbf{3. Pętla barycentryczna (środek ciężkości)}\\
+W ostatnim kroku zajmujemy się wszystkimi pozostałymi wierzchołkami (znajdującymi się wewnątrz ramki). W głównej pętli, która wykonuje się 100 razy, program bierze każdy "niezamrożony" wierzchołek i przesuwa go dokładnie w środek ciężkości jego sąsiadów. 
+
+\newpage 
+Jeśli wierzchołek $v$ jest połączony z $N$ sąsiadami, to jego nowe współrzędne wyliczamy ze średniej arytmetycznej z pozycji sąsiadujących wierzchołków:
+
+$$X_v = \frac{1}{N} \sum_{j=1}^{N} X_j$$
+
+$$Y_v = \frac{1}{N} \sum_{j=1}^{N} Y_j$$
+
+Wielokrotne wyliczanie środka ciężkości pozwala wierzchołkom wewnętrznym na płynne korygowanie swojego położenia. Ponieważ zewnętrzna ramka jest zablokowana na stałe, cały układ po kilkudziesięciu iteracjach naturalnie osiąga stan równowagi. Pozwala to na wyrysowanie ostatecznej, przejrzystej siatki bez przecinających się krawędzi.
 
 \section{Specyfikacja wejścia i wyjścia}
 
