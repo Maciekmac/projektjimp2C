@@ -10,6 +10,45 @@
 double min_d(double a, double b) {
 	return (a < b) ? a : b;
 }
+
+// Test planarnosci
+// Zwraca 1 jesli zakladamy ze graf jest planarny (nie zawsze skuteczne) lub 0 jesli na 100% nie jest planarny
+int check_planarity(Graph* g) {
+	int v = g->vertex_count; // Liczba wierzcholkow
+	int e = g->count; // Liczba krawedzi
+	
+	// Grafy o 3 lub mniej wierzcholkach zawsze sa planarne
+	if (v <= 3) return 1;
+
+	// Test z twierdzenia Eulera
+	if (e > 3 * v - 6) return 0;
+
+	// Heurystyka z twierdzenia Kuratowskiego
+	int deg_3_plus = 0;
+	int deg_4_plus = 0;
+	int* degrees = calloc(v, sizeof(int));
+
+	// Zliczenie stopni wierzcholkow
+	for (int i = 0; i < e; i++) {
+		int idx1 = get_or_add_vertex(g, g->edges[i].v1);
+		int idx2 = get_or_add_vertex(g, g->edges[i].v2);
+		degrees[idx1]++;
+		degrees[idx2]++;
+	}
+
+	// Sprawdzenie ile jest kandydatow do nieplanarnych struktur
+	for (int i = 0; i < v; i++) {
+		if (degrees[i] >= 3) deg_3_plus++;
+		if (degrees[i] >= 4) deg_4_plus++;
+	}
+	free(degrees);
+
+	// Jesli graf przeszedl test Eulera i nie ma materialu na stworzenie struktur K5 i K3,3 matematycznie na 100% jest planarny
+	if (deg_4_plus < 5 && deg_3_plus < 6) return 1;
+	// W reszcie przypadkow graf jest podejrzany ale zakladamy ze jest planarny
+	return 1;
+}
+
 void algo_1_fruchterman_reingold(Graph* g, double width, double height, int iterations) {
 	if (g->vertex_count == 0) return;
 	srand((unsigned int)time(NULL));

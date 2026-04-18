@@ -33,6 +33,12 @@ int main(int argc, char *argv[]) {
     }
 
     printf("Sukces! Wczytano %d krawedzi z pliku.\n", my_graph.count);
+    if (check_planarity(&my_graph) == 0) {
+        printf("\n[OSTRZEZENIE] Graf zlamal warunek Eulera (jest za gesty)!\n");
+        printf("Na 100%% nie jest planarny. Krawedzie beda sie przecinac na rysunku.\n\n");
+    } else {
+        printf("Test planarnosci: Pozytywny (zakladamy brak przeciec).\n");
+    }
     printf("Obliczam wspolrzedne algorytmem...\n"); //Uruchomienie algorytmów
     if (config.use_algo_2) {
         // Odpalamy algorytm 2 - Tutte Embedding (flaga -a)

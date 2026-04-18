@@ -13,4 +13,6 @@ void algo_1_fruchterman_reingold(Graph* g, double width, double height, int iter
 
 void algo_2_tutte_embedding(Graph* g, double width, double height);
 
+int check_planarity(Graph* g);
+
 #endif
