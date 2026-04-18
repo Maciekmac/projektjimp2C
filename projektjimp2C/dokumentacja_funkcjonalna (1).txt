@@ -45,6 +45,7 @@ Aplikacja udostępnia użytkownikowi następujące funkcje:
     \item Zapisywanie wyliczonych współrzędnych do pliku wyjściowego w formacie tekstowym.
     \item Możliwość zapisania wyników do pliku w formacie binarnym (wymuszana za pomocą opcjonalnej flagi).
     \item Wykrywanie i reagowanie na błędy (np. brak pliku wejściowego) poprzez wyświetlanie ostrzeżeń i zwracanie kodów błędu.
+    \item Heurystyczne sprawdzanie planarności grafu -- automatyczna analiza grafu pod kątem możliwości rysowania bez przecięć (heurystyka Eulera i Kuratowskiego). W przypadku wykrycia grafu nieplanarnego, program wyświetla ostrzeżenie o nieuchronnych przecięciach krawędzi.
 \end{itemize}
 
 \section{Specyfikacja wejścia/wyjścia}
