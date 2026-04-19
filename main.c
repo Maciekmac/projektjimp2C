@@ -39,15 +39,15 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Test planarnosci: Pozytywny (zakladamy brak przeciec).\n");
     }
-    printf("Obliczam wspolrzedne algorytmem...\n"); //Uruchomienie algorytmów
+    printf("Obliczam wspolrzedne algorytmem...\n"); //Uruchomienie algorytmï¿½w
     if (config.use_algo_2) {
         // Odpalamy algorytm 2 - Tutte Embedding (flaga -a)
         printf("Uzywam algorytmu alternatywnego Tutte Embedding.\n");
 	algo_2_tutte_embedding(&my_graph, 800.0, 600.0);
     }
     else {
-        // Domyœlny algorytm: Fruchterman-Reingold
-        // Przyjmujemy planszê 800x600 i robimy 100 kroków symulacji
+        // Domyï¿½lny algorytm: Fruchterman-Reingold
+        // Przyjmujemy planszï¿½ 800x600 i robimy 100 krokï¿½w symulacji
         algo_1_fruchterman_reingold(&my_graph, 800.0, 600.0, 100);
     }
 
@@ -60,7 +60,11 @@ int main(int argc, char *argv[]) {
             my_graph.vertices[i].y);
     }
     printf("----------------------------\n");
-    
+    int save_status = save_graph(config.output_file, &my_graph, config.binary_mode);
+    if (save_status != SUCCESS) {
+        free_graph(&my_graph);
+        return save_status;
+    }
     free_graph(&my_graph);
 
     return SUCCESS;

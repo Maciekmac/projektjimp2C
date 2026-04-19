@@ -71,6 +71,47 @@ int load_graph(FILE *file, Graph *g){
     }
     return SUCCESS;
 }
+// Funkcja zapisująca wyliczone współrzędne do pliku
+int save_graph(const char *filename, Graph *g, int binary_mode) {
+    FILE *out_file;
+
+    // TRYB BINARNY
+    if (binary_mode) {
+        out_file = fopen(filename, "wb");
+        if (out_file == NULL) {
+            fprintf(stderr, "Blad: Nie udalo sie otworzyc pliku do zapisu binarnego: %s\n", filename);
+            return ERR_OUTPUT_WRITE; 
+        }
+        
+        // Zapisujemy najpierw liczbę wierzchołków
+        fwrite(&(g->vertex_count), sizeof(int), 1, out_file);
+        
+        // Zrzut całej tablicy wierzchołków bezpośrednio z pamięci na dysk 
+        fwrite(g->vertices, sizeof(Vertex), g->vertex_count, out_file);
+        
+    } 
+    // TRYB TEKSTOWY
+    else {
+        out_file = fopen(filename, "w");
+        if (out_file == NULL) {
+            fprintf(stderr, "Blad: Nie udalo sie otworzyc pliku do zapisu tekstowego: %s\n", filename);
+            return ERR_OUTPUT_WRITE;
+        }
+        
+        // Zapis w formacie: "ID X Y" 
+        for (int i = 0; i < g->vertex_count; i++) {
+            fprintf(out_file, "%d %.6f %.6f\n", 
+                    g->vertices[i].id, 
+                    g->vertices[i].x, 
+                    g->vertices[i].y);
+        }
+    }
+
+    fclose(out_file);
+    printf("Zapisano wyniki do pliku: %s\n", filename);
+    
+    return SUCCESS;
+}
 void free_graph(Graph *g) {
     if (g->edges != NULL) {
         free(g->edges);

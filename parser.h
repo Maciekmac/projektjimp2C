@@ -36,6 +36,7 @@ typedef struct {
 int get_or_add_vertex(Graph* g, int id);
 void init_graph(Graph *g);
 int load_graph(FILE *file, Graph *g);
+int save_graph(const char *filename, Graph *g, int binary_mode);
 void free_graph(Graph *g);
 
 #endif 
