@@ -5,6 +5,7 @@
 #include "algorithms.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
+#define MIN_DISTANCE 0.0001
 #endif
 
 double min_d(double a, double b) {
@@ -72,7 +73,7 @@ void algo_1_fruchterman_reingold(Graph* g, double width, double height, int iter
 				double delta_y = g->vertices[v].y - g->vertices[u].y;
 				double distance = sqrt(delta_x * delta_x + delta_y * delta_y);
 
-				if (distance > 0.0001) { 
+				if (distance > MIN_DISTANCE) { 
 					double repulsion_force = (k * k) / distance;
 					g->vertices[v].dx += (delta_x / distance) * repulsion_force;
 					g->vertices[v].dy += (delta_y / distance) * repulsion_force;
@@ -88,7 +89,7 @@ void algo_1_fruchterman_reingold(Graph* g, double width, double height, int iter
 			double delta_y = g->vertices[v_idx].y - g->vertices[u_idx].y;
 			double distance = sqrt(delta_x * delta_x + delta_y * delta_y);
 
-			if (distance > 0.0001) {
+			if (distance > MIN_DISTANCE) {
 				double attraction_force = (distance * distance) / k;
 				g->vertices[v_idx].dx -= (delta_x / distance) * attraction_force;
 				g->vertices[v_idx].dy -= (delta_y / distance) * attraction_force;
@@ -99,13 +100,13 @@ void algo_1_fruchterman_reingold(Graph* g, double width, double height, int iter
 		for (int v = 0; v < g->vertex_count; v++) {
 			double distance = sqrt(g->vertices[v].dx * g->vertices[v].dx + g->vertices[v].dy * g->vertices[v].dy);
 
-			if (distance > 0.0001) {
+			if (distance > MIN_DISTANCE) {
 				double displacement = min_d(distance, t);
 				g->vertices[v].x += (g->vertices[v].dx / distance) * displacement;
 				g->vertices[v].y += (g->vertices[v].dy / distance) * displacement;
 			}
 
-			// Ograniczenie, ¿eby wierzcho³ek nie wyszed³ poza pole (width x height)
+			// Ograniczenie, Â¿eby wierzchoÂ³ek nie wyszedÂ³ poza pole (width x height)
 			g->vertices[v].x = min_d(width - 10, g->vertices[v].x);
 			g->vertices[v].x = (g->vertices[v].x < 10) ? 10 : g->vertices[v].x; 
 
