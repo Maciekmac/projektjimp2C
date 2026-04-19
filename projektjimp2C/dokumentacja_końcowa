@@ -1,0 +1,107 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\onehalfspacing
+
+
+\title{\vspace*{3cm} \textbf{Dokumentacja Końcowa Projektu \\ Wyznaczanie Współrzędnych Grafu}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Wstęp i Cel Projektu}
+Celem projektu jest aplikacja w języku C służąca do automatycznego określania współrzędnych wierzchołków grafu na płaszczyźnie 2D. Program przetwarza listę krawędzi podaną w pliku tekstowym i generuje układ wierzchołków zgodny z ideą grafów planarnych, minimalizując liczbę przecięć krawędzi.
+
+\section{Specyfikacja Funkcjonalna}
+
+\subsection{Realizowane Funkcje}
+\begin{itemize}
+    \item Wczytywanie i walidacja struktury grafu z pliku tekstowego.
+    \item Heurystyczne sprawdzanie planarności grafu przy użyciu twierdzeń Eulera i Kuratowskiego.
+    \item Wybór jednego z dwóch algorytmów rozmieszczania wierzchołków (flaga \texttt{-a}).
+    \item Zapis wyliczonych współrzędnych do pliku tekstowego (.txt) lub binarnego (.bin).
+    \item Obsługa błędów wejścia/wyjścia oraz nieprawidłowych formatów danych.
+\end{itemize}
+
+\subsection{Interfejs Użytkownika (CLI)}
+Program działa w trybie konsolowym i obsługuje następujące parametry:
+\begin{itemize}
+    \item \texttt{./a.out <plik\_wejsciowy>} -- uruchomienie domyślne (algorytm FR, wyjście tekstowe).
+    \item \texttt{-o <sciezka>} -- określenie ścieżki pliku wyjściowego.
+    \item \texttt{-a} -- zmiana algorytmu na Tutte Embedding.
+    \item \texttt{-b} -- wymuszenie zapisu w formacie binarnym.
+\end{itemize}
+
+\section{Architektura i Implementacja}
+
+\subsection{Podział na Moduły}
+\begin{itemize}
+    \item \textbf{\texttt{main.c}}: Koordynacja przepływu sterowania, wywołanie parsera i algorytmów.
+    \item \textbf{\texttt{config.c}}: Interpretacja flag terminala i walidacja rozszerzeń plików.
+    \item \textbf{\texttt{parser.c}}: Zarządzanie pamięcią grafu, wczytywanie krawędzi oraz \textbf{zapis wyników} (\texttt{save\_graph}).
+    \item \textbf{\texttt{algorithms.c}}: Implementacja matematyczna algorytmów i testu planarności.
+\end{itemize}
+
+\subsection{Struktury Danych}
+Podstawą programu jest dynamicznie alokowana struktura \texttt{Graph}, przechowująca tablice wierzchołków (\texttt{Vertex}) i krawędzi (\texttt{Edge}). Pamięć jest skalowana dynamicznie (podwajanie pojemności) przy użyciu \texttt{realloc}, co zapewnia wydajność przy dużych grafach.
+
+\section{Algorytmy Obliczeniowe}
+
+\subsection{Test Planarności}
+Program wykorzystuje szybką heurystykę $O(V+E)$:
+\begin{enumerate}
+    \item \textbf{Reguła Eulera}: Dla grafów planarnych $E \le 3V - 6$.
+    \item \textbf{Heurystyka Kuratowskiego}: Zliczanie stopni wierzchołków w poszukiwaniu struktur $K_5$ lub $K_{3,3}$.
+\end{enumerate}
+
+\subsection{Algorytm 1: Fruchterman-Reingold (Force-Directed)}
+Model siłowy oparty na fizyce. Wierzchołki odpychają się siłą $f_r(d) = \frac{k^2}{d}$, a krawędzie przyciągają siłą $f_a(d) = \frac{d^2}{k}$. Stabilizacja następuje poprzez mechanizm symulowanego wyżarzania (parametr temperatury \texttt{t}).
+
+\subsection{Algorytm 2: Tutte Embedding (Barycentryczny)}
+Metoda dedykowana grafom planarnym:
+\begin{enumerate}
+    \item Znalezienie najdłuższego cyklu (ramki) za pomocą DFS.
+    \item Zablokowanie wierzchołków ramki na obwodzie koła.
+    \item Ustawienie wierzchołków wewnętrznych w środku ciężkości ich sąsiadów: $X_v = \frac{1}{N} \sum X_j$.
+\end{enumerate}
+
+\section{Obsługa Plików i Błędy}
+Nowo zaimplementowana funkcja \texttt{save\_graph} w module \texttt{parser.c} umożliwia bezpieczny zapis wyliczonych współrzędnych. W trybie tekstowym dane zapisywane są jako \texttt{ID X Y}, natomiast w binarnym następuje bezpośredni zrzut struktur z pamięci.
+
+\subsection{Kody Powrotu}
+\centering
+\begin{table}[t] 
+\large 
+\renewcommand{\arraystretch}{1.8} 
+\begin{tabular}{|c|p{12cm}|}
+\hline
+\textbf{Kod} & \textbf{Opis Sytuacji} \\ \hline
+0 & Sukces -- poprawne wyliczenie i zapis. \\ \hline
+1 & Błąd odczytu pliku wejściowego. \\ \hline
+2 & Nieprawidłowy format danych wejściowych. \\ \hline
+3 & Błąd zapisu pliku wyjściowego. \\ \hline
+4 & Nieobsługiwane rozszerzenie pliku wyjściowego. \\ \hline
+\end{tabular}
+\end{table}
+
+\end{document}
