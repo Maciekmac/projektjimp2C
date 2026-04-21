@@ -133,7 +133,6 @@ Po ustaleniu tych pozycji, współrzędne wierzchołków z ramki zostają "zamro
 \textbf{3. Pętla barycentryczna (środek ciężkości)}\\
 W ostatnim kroku zajmujemy się wszystkimi pozostałymi wierzchołkami (znajdującymi się wewnątrz ramki). W głównej pętli, która wykonuje się 100 razy, program bierze każdy "niezamrożony" wierzchołek i przesuwa go dokładnie w środek ciężkości jego sąsiadów. 
 
-\newpage 
 Jeśli wierzchołek $v$ jest połączony z $N$ sąsiadami, to jego nowe współrzędne wyliczamy ze średniej arytmetycznej z pozycji sąsiadujących wierzchołków:
 
 $$X_v = \frac{1}{N} \sum_{j=1}^{N} X_j$$
