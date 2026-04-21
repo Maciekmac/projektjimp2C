@@ -88,7 +88,6 @@ Metoda dedykowana grafom planarnym:
 \section{Obsługa Plików i Błędy}
 Nowo zaimplementowana funkcja \texttt{save\_graph} w module \texttt{parser.c} umożliwia bezpieczny zapis wyliczonych współrzędnych. W trybie tekstowym dane zapisywane są jako \texttt{ID X Y}, natomiast w binarnym następuje bezpośredni zrzut struktur z pamięci.
 
-\newpage
 \subsection{Kody Powrotu}
 \centering
 \begin{table}[t] 
