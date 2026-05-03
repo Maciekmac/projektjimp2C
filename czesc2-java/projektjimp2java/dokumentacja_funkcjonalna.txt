@@ -1,0 +1,103 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Pakiety dla języka polskiego ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+
+% --- Geometria strony i formatowanie ---
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+% --- Spis treści ---
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\onehalfspacing
+
+% --- Strona tytułowa ---
+\title{\vspace*{3cm} \textbf{Dokumentacja Funkcjonalna \\ Systemu Wizualizacji Grafów – Część JAVA}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Wstęp}
+Niniejszy dokument stanowi rozszerzoną specyfikację funkcjonalną aplikacji do wizualizacji grafów planarnych, realizowanej w technologii Java Swing. Aplikacja służy jako interfejs graficzny dla danych wygenerowanych w pierwszej części projektu (moduł C). Dokument szczegółowo opisuje architekturę systemu oraz logikę interakcji użytkownika z komponentami graficznymi.
+
+\section{Architektura Systemu (Wzorzec MVC)}
+Projekt opiera się na wzorcu projektowym Model-View-Controller, co zapewnia separację danych od ich prezentacji.
+
+\subsection{Model (Dane)}
+\begin{itemize}
+    \item Klasy \texttt{Vertex} i \texttt{Edge}: przechowują parametry fizyczne (współrzędne, wagi, identyfikatory).
+    \item Klasa \texttt{GraphModel}: kontener zarządzający zbiorami danych, odpowiedzialny za logikę wczytywania (parser) oraz informowanie kontrolera o zmianach w strukturze.
+\end{itemize}
+
+\subsection{View (Interfejs Użytkownika)}
+\begin{itemize}
+    \item \texttt{MainWindow}: główna ramka (\texttt{JFrame}) organizująca układ elementów.
+    \item \texttt{GraphCanvas}: autorski komponent graficzny (\texttt{JPanel}) odpowiedzialny za renderowanie grafu.
+    \item \texttt{ControlPanel}: panel boczny zawierający suwaki, pola edycji i przyciski.
+\end{itemize}
+
+\subsection{Controller (Logika i Zdarzenia)}
+\begin{itemize}
+    \item Obsługa zdarzeń (\texttt{ActionListeners}, \texttt{MouseListeners}).
+    \item Synchronizacja: zmiana współrzędnych w panelu sterowania powoduje natychmiastowe przerysowanie płótna (\texttt{repaint()}).
+\end{itemize}
+
+\section{Szczegółowy Opis Komponentów GUI}
+
+\subsection{Autorski Komponent Rysujący (Płótno)}
+Komponent \texttt{GraphCanvas} implementuje metodę \texttt{paintComponent(Graphics g)}, która realizuje:
+\begin{itemize}
+    \item \textbf{Renderowanie krawędzi:} linie łączące pary wierzchołków z opcjonalnym wyświetlaniem wagi w punkcie środkowym odcinka.
+    \item \textbf{Renderowanie wierzchołków:} koła z wpisanymi identyfikatorami.
+    \item \textbf{Skalowanie (Zoom):} przeliczanie współrzędnych modelu na współrzędne ekranowe z uwzględnieniem współczynnika powiększenia.
+\end{itemize}
+
+\subsection{Panel Narzędziowy i Interakcja}
+Panel boczny udostępnia zaawansowane opcje sterowania:
+\begin{itemize}
+    \item \textbf{Modyfikacja Współrzędnych:} Pola tekstowe \texttt{X} i \texttt{Y}, które stają się aktywne po kliknięciu myszą w dany wierzchołek na płótnie.
+    \item \textbf{Filtry Wyświetlania:} Checkboxy pozwalające na ukrywanie/pokazywanie etykiet ID oraz wag krawędzi.
+    \item \textbf{Nawigacja:} Suwak (Slider) do zmiany poziomu przybliżenia oraz przycisk resetujący widok do stanu początkowego.
+    \item \textbf{Wybór Algorytmu:} Lista rozwijana (\texttt{JComboBox}) pozwalająca na wskazanie algorytmu, który ma zostać użyty do przeliczenia układu grafu na płótnie.
+\end{itemize}
+
+\subsection{Pasek Menu (JMenuBar)}
+Aplikacja posiada górne menu nawigacyjne, zapewniające podstawowe operacje wejścia/wyjścia:
+\begin{itemize}
+    \item \textbf{Plik $\rightarrow$ Wczytaj:} Pozwala na otwarcie okna dialogowego i wybór pliku z danymi grafu (w formacie tekstowym \texttt{.txt} lub binarnym \texttt{.bin}).
+    \item \textbf{Plik $\rightarrow$ Zapisz:} Umożliwia zapisanie aktualnych wyników (zaktualizowanych współrzędnych) oraz eksport widocznego na płótnie grafu.
+\end{itemize}
+
+\section{Specyfikacja Operacji na Plikach}
+Aplikacja musi zapewniać pełną kompatybilność z danymi wyjściowymi modułu C:
+\begin{itemize}
+    \item \textbf{Format Tekstowy (.txt):} Parsowanie linii w formacie \texttt{ID X Y}.
+    \item \textbf{Format Binarny (.bin):} Odczyt bezpośredniego zrzutu pamięci struktur C (wymaga uwzględnienia mapowania typów prostych między C a Javą).
+    \item \textbf{Eksport Wyników (.txt):} Opcja zapisu do pliku tekstowego aktualnych, zmodyfikowanych przez użytkownika współrzędnych wierzchołków.
+    \item \textbf{Eksport Grafiki (.png/.jpg):} Funkcjonalność pozwalająca na wykonanie zrzutu aktualnego stanu komponentu GraphCanvas i zapisanie wygenerowanego rysunku grafu na dysku.
+\end{itemize}
+
+\section{Obsługa Sytuacji Wyjątkowych}
+\begin{itemize}
+    \item \textbf{Błędy Plików:} W przypadku napotkania nieprawidłowego formatu danych, aplikacja wyświetla okno modalne \texttt{JOptionPane} z komunikatem błędu.
+    \item \textbf{Walidacja Wejścia:} Próba wpisania nienumerycznych wartości w pola współrzędnych jest blokowana, a użytkownik otrzymuje ostrzeżenie w pasku stanu.
+\end{itemize}
+
+\end{document}
