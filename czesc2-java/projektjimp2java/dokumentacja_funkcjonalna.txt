@@ -21,7 +21,7 @@
 \onehalfspacing
 
 % --- Strona tytułowa ---
-\title{\vspace*{3cm} \textbf{Dokumentacja Funkcjonalna \\ Systemu Wizualizacji Grafów – Część JAVA}}
+\title{\vspace*{3cm} \textbf{Specyfikacja Funkcjonalna \\ Systemu Wizualizacji Grafów – Część JAVA}}
 \author{Mikołaj Dulny \\ Maciej Maciejewski}
 \date{\today}
 
@@ -34,70 +34,68 @@
 \tableofcontents
 \newpage
 
-\section{Wstęp}
-Niniejszy dokument stanowi rozszerzoną specyfikację funkcjonalną aplikacji do wizualizacji grafów planarnych, realizowanej w technologii Java Swing. Aplikacja służy jako interfejs graficzny dla danych wygenerowanych w pierwszej części projektu (moduł C). Dokument szczegółowo opisuje architekturę systemu oraz logikę interakcji użytkownika z komponentami graficznymi.
+\section{Wstęp i Cel Projektu}
+Niniejszy dokument stanowi specyfikację funkcjonalną aplikacji z graficznym interfejsem użytkownika, służącej do wizualizacji grafów planarnych. Aplikacja jest przeznaczona dla użytkowników końcowych i współpracuje z danymi wygenerowanymi przez moduł obliczeniowy (napisanym w języku C). Celem programu jest przejrzyste i estetyczne wyświetlenie wyznaczonych współrzędnych wierzchołków oraz umożliwienie użytkownikowi interakcji z wygenerowanym grafem.
 
-\section{Architektura Systemu (Wzorzec MVC)}
-Projekt opiera się na wzorcu projektowym Model-View-Controller, co zapewnia separację danych od ich prezentacji.
-
-\subsection{Model (Dane)}
+\section{Wypis Funkcjonalności Programu}
+Zgodnie z założeniami projektowymi, aplikacja udostępnia użytkownikowi następujące funkcjonalności:
 \begin{itemize}
-    \item Klasy \texttt{Vertex} i \texttt{Edge}: przechowują parametry fizyczne (współrzędne, wagi, identyfikatory).
-    \item Klasa \texttt{GraphModel}: kontener zarządzający zbiorami danych, odpowiedzialny za logikę wczytywania (parser) oraz informowanie kontrolera o zmianach w strukturze.
+    \item \textbf{Wczytywanie danych:} Obsługa plików wejściowych zawierających strukturę grafu oraz współrzędne, zapisanych w formacie tekstowym (.txt) lub binarnym (.bin).
+    \item \textbf{Wizualizacja grafu:} Automatyczne rysowanie układu wierzchołków i łączących je krawędzi (wraz z ich wagami) na dwuwymiarowej płaszczyźnie.
+    \item \textbf{Wybór algorytmu:} Możliwość przeliczania lub dostosowywania układu grafu na podstawie wybranego algorytmu wizualizacji.
+    \item \textbf{Interakcja z widokiem (Nawigacja):} Przybliżanie i oddalanie widoku (zoom), przesuwanie pola widzenia oraz powrót do widoku domyślnego.
+    \item \textbf{Zarządzanie wyświetlaniem:} Opcja pokazywania lub ukrywania etykiet identyfikujących wierzchołki oraz wag przypisanych do krawędzi.
+    \item \textbf{Ręczna modyfikacja:} Edycja współrzędnych (X, Y) dla wskazanego przez użytkownika wierzchołka, z natychmiastowym odświeżeniem widoku.
+    \item \textbf{Eksport wyników:} Zapis zmodyfikowanych współrzędnych do nowego pliku tekstowego oraz możliwość zapisu bieżącego widoku grafu w formie pliku graficznego.
 \end{itemize}
 
-\subsection{View (Interfejs Użytkownika)}
+\section{Opis Interfejsu i Instrukcja Obsługi}
+Interfejs programu został zaprojektowany z myślą o intuicyjnej obsłudze. Składa się z trzech głównych sekcji:
+
+\subsection{Pasek Menu}
+Znajduje się w górnej części okna i zawiera opcje operacji na plikach:
 \begin{itemize}
-    \item \texttt{MainWindow}: główna ramka (\texttt{JFrame}) organizująca układ elementów.
-    \item \texttt{GraphCanvas}: autorski komponent graficzny (\texttt{JPanel}) odpowiedzialny za renderowanie grafu.
-    \item \texttt{ControlPanel}: panel boczny zawierający suwaki, pola edycji i przyciski.
+    \item \textbf{Plik $\rightarrow$ Wczytaj graf:} Otwiera systemowe okno wyboru pliku, pozwalając załadować graf z formatu tekstowego lub binarnego.
+    \item \textbf{Plik $\rightarrow$ Zapisz współrzędne:} Pozwala zapisać zaktualizowaną listę współrzędnych do wybranego pliku.
+    \item \textbf{Plik $\rightarrow$ Eksportuj widok:} Tworzy obraz (zrzut widocznego grafu) możliwy do zapisu na dysku.
 \end{itemize}
 
-\subsection{Controller (Logika i Zdarzenia)}
+\subsection{Główny Panel Wizualizacji (Płótno)}
+Centralna część aplikacji, w której rysowany jest graf. Użytkownik może wchodzić w interakcję z widokiem przy użyciu myszy:
 \begin{itemize}
-    \item Obsługa zdarzeń (\texttt{ActionListeners}, \texttt{MouseListeners}).
-    \item Synchronizacja: zmiana współrzędnych w panelu sterowania powoduje natychmiastowe przerysowanie płótna (\texttt{repaint()}).
+    \item Kliknięcie wierzchołka powoduje jego zaznaczenie (co aktywuje opcję jego modyfikacji w panelu bocznym).
+    \item Użycie rolki myszy pozwala na skalowanie widoku (zoom).
 \end{itemize}
 
-\section{Szczegółowy Opis Komponentów GUI}
-
-\subsection{Autorski Komponent Rysujący (Płótno)}
-Komponent \texttt{GraphCanvas} implementuje metodę \texttt{paintComponent(Graphics g)}, która realizuje:
+\subsection{Panel Narzędziowy (Prawy pasek)}
+Panel ułatwiający sterowanie widokiem i modyfikację parametrów:
 \begin{itemize}
-    \item \textbf{Renderowanie krawędzi:} linie łączące pary wierzchołków z opcjonalnym wyświetlaniem wagi w punkcie środkowym odcinka.
-    \item \textbf{Renderowanie wierzchołków:} koła z wpisanymi identyfikatorami.
-    \item \textbf{Skalowanie (Zoom):} przeliczanie współrzędnych modelu na współrzędne ekranowe z uwzględnieniem współczynnika powiększenia.
+    \item \textbf{Wybór algorytmu:} Lista rozwijana pozwalająca zmienić metodę układania wierzchołków.
+    \item \textbf{Modyfikacja wierzchołka:} Pola numeryczne "X" i "Y" umożliwiające ręczną zmianę pozycji zaznaczonego wierzchołka.
+    \item \textbf{Opcje wyświetlania (Filtry):} Zestaw przełączników (checkbox) włączających i wyłączających widoczność ID wierzchołków oraz wag krawędzi.
+    \item \textbf{Kontrola widoku:} Suwak zbliżenia oraz przycisk "Resetuj widok", przywracający graf do środka ekranu i domyślnej skali.
 \end{itemize}
 
-\subsection{Panel Narzędziowy i Interakcja}
-Panel boczny udostępnia zaawansowane opcje sterowania:
+\section{Formaty Danych (Wejście i Wyjście)}
+Program do poprawnego działania wymaga dostarczenia plików o ściśle określonej strukturze, wynikającej z działania wcześniejszego modułu (C).
+
+\subsection{Dane wejściowe}
+Użytkownik może wczytać plik w dwóch formatach:
 \begin{itemize}
-    \item \textbf{Modyfikacja Współrzędnych:} Pola tekstowe \texttt{X} i \texttt{Y}, które stają się aktywne po kliknięciu myszą w dany wierzchołek na płótnie.
-    \item \textbf{Filtry Wyświetlania:} Checkboxy pozwalające na ukrywanie/pokazywanie etykiet ID oraz wag krawędzi.
-    \item \textbf{Nawigacja:} Suwak (Slider) do zmiany poziomu przybliżenia oraz przycisk resetujący widok do stanu początkowego.
-    \item \textbf{Wybór Algorytmu:} Lista rozwijana (\texttt{JComboBox}) pozwalająca na wskazanie algorytmu, który ma zostać użyty do przeliczenia układu grafu na płótnie.
+    \item \textbf{Plik tekstowy (.txt):} Wymagane jest, aby dane były zapisane w postaci listy. Spodziewany format to np. linijki zawierające identyfikator wierzchołka oraz jego współrzędne \texttt{<wierzchołek> <x> <y>}.
+    \item \textbf{Plik binarny (.bin):} Alternatywny format przyspieszający ładowanie bardzo dużych grafów, stanowiący binarny zapis struktury wygenerowanej z programu C.
 \end{itemize}
 
-\subsection{Pasek Menu (JMenuBar)}
-Aplikacja posiada górne menu nawigacyjne, zapewniające podstawowe operacje wejścia/wyjścia:
-\begin{itemize}
-    \item \textbf{Plik $\rightarrow$ Wczytaj:} Pozwala na otwarcie okna dialogowego i wybór pliku z danymi grafu (w formacie tekstowym \texttt{.txt} lub binarnym \texttt{.bin}).
-    \item \textbf{Plik $\rightarrow$ Zapisz:} Umożliwia zapisanie aktualnych wyników (zaktualizowanych współrzędnych) oraz eksport widocznego na płótnie grafu.
-\end{itemize}
+\subsection{Dane wyjściowe}
+Wynikiem działania programu, w przypadku chęci zapisu, jest plik tekstowy. Będzie on zawierał zaktualizowane (na skutek użycia algorytmu lub ręcznej modyfikacji) pozycje wierzchołków w analogicznym formacie \texttt{<ID> <X> <Y>}.
 
-\section{Specyfikacja Operacji na Plikach}
-Aplikacja musi zapewniać pełną kompatybilność z danymi wyjściowymi modułu C:
-\begin{itemize}
-    \item \textbf{Format Tekstowy (.txt):} Parsowanie linii w formacie \texttt{ID X Y}.
-    \item \textbf{Format Binarny (.bin):} Odczyt bezpośredniego zrzutu pamięci struktur C (wymaga uwzględnienia mapowania typów prostych między C a Javą).
-    \item \textbf{Eksport Wyników (.txt):} Opcja zapisu do pliku tekstowego aktualnych, zmodyfikowanych przez użytkownika współrzędnych wierzchołków.
-    \item \textbf{Eksport Grafiki (.png/.jpg):} Funkcjonalność pozwalająca na wykonanie zrzutu aktualnego stanu komponentu GraphCanvas i zapisanie wygenerowanego rysunku grafu na dysku.
-\end{itemize}
+\section{Sytuacje Wyjątkowe i Komunikaty Błędów}
+Aplikacja została zabezpieczona przed podstawowymi błędami ze strony użytkownika. Wystąpienie błędu będzie sygnalizowane wyraźnym okienkiem dialogowym z ostrzeżeniem.
 
-\section{Obsługa Sytuacji Wyjątkowych}
 \begin{itemize}
-    \item \textbf{Błędy Plików:} W przypadku napotkania nieprawidłowego formatu danych, aplikacja wyświetla okno modalne \texttt{JOptionPane} z komunikatem błędu.
-    \item \textbf{Walidacja Wejścia:} Próba wpisania nienumerycznych wartości w pola współrzędnych jest blokowana, a użytkownik otrzymuje ostrzeżenie w pasku stanu.
+    \item \textbf{Błąd odczytu pliku:} Jeśli wybrany plik nie istnieje, jest uszkodzony lub ma nieprawidłowe uprawnienia, program wyświetli komunikat: \textit{"Nie udało się otworzyć pliku. Sprawdź, czy posiadasz odpowiednie uprawnienia i spróbuj ponownie."}
+    \item \textbf{Niezgodność formatu danych:} Jeżeli wczytywany plik tekstowy (.txt) posiada nieprawidłową składnię (np. litery w miejscu wymaganych współrzędnych numerycznych), wyświetlony zostanie komunikat: \textit{"Błąd formatu pliku. Upewnij się, że plik zawiera poprawne współrzędne oddzielone białymi znakami."} Wczytywanie zostanie przerwane.
+    \item \textbf{Błędne wartości w panelu modyfikacji:} Jeśli po zaznaczeniu wierzchołka użytkownik wprowadzi do pól edycji X/Y znaki inne niż liczby zmiennoprzecinkowe, próba zatwierdzenia zmiany wywoła komunikat: \textit{"Wprowadzono nieprawidłowe wartości. Współrzędne muszą być wartościami liczbowymi."} Zmiany nie zostaną zaaplikowane.
 \end{itemize}
 
 \end{document}
