@@ -1,0 +1,104 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Pakiety dla języka polskiego ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+
+% --- Geometria strony i formatowanie ---
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+
+\onehalfspacing
+
+% --- Strona tytułowa ---
+\title{\vspace*{3cm} \textbf{Dokumentacja Implementacyjna \\ Systemu Wizualizacji Grafów – Część JAVA}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Wstęp}
+Niniejszy dokument stanowi dokumentację implementacyjną dla aplikacji okienkowej napisanej w języku Java, z wykorzystaniem biblioteki Swing. Aplikacja stanowi drugą część projektu i służy do wizualizacji grafów planarnych na podstawie danych wygenerowanych przez moduł napisany w języku C. Dokument pełni rolę przewodnika po kodzie, ułatwiającego jego zrozumienie, pielęgnację oraz ewentualny dalszy rozwój.
+
+\section{Architektura Systemu i Wzorce Projektowe}
+Głównym wzorcem projektowym zastosowanym w aplikacji jest \textbf{MVC (Model-View-Controller)}. Wzorzec ten pozwala na logiczne i fizyczne oddzielenie warstwy przechowującej dane od interfejsu graficznego oraz logiki sterującej operacjami. 
+
+Aby zachować przejrzystość kodu, system został podzielony na następujące pakiety:
+\begin{itemize}
+    \item \textbf{\texttt{model}} – pakiet zawierający klasy reprezentujące strukturę grafu oraz operacje na plikach.
+    \item \textbf{\texttt{view}} – pakiet grupujący klasy interfejsu graficznego (GUI), zbudowane w oparciu o komponenty biblioteki Swing.
+    \item \textbf{\texttt{controller}} – pakiet zawierający logikę sterującą, łączącą zdarzenia z interfejsu z modelem danych.
+\end{itemize}
+
+\section{Struktura Danych (Model)}
+Fundamentem aplikacji jest pakiet modelu, który przechowuje abstrakcyjną reprezentację grafu, niezależną od widoku. 
+
+\subsection{Klasa Vertex}
+Klasa reprezentująca pojedynczy wierzchołek grafu. Przechowuje ona podstawowe parametry fizyczne wyliczone przez moduł C.
+\begin{itemize}
+    \item \textbf{Pola klasy:} \texttt{id} (unikalny identyfikator), \texttt{x} (współrzędna pozioma), \texttt{y} (współrzędna pionowa).
+    \item \textbf{Kluczowe metody:} Gettery i settery pozwalające na modyfikację współrzędnych (np. przy ręcznym przesuwaniu wierzchołka).
+\end{itemize}
+
+\subsection{Klasa Edge}
+Klasa reprezentująca pojedynczą krawędź grafu, łączącą dwa punkty.
+\begin{itemize}
+    \item \textbf{Pola klasy:} Referencje do dwóch połączonych obiektów \texttt{Vertex} oraz zmienna \texttt{weight} (waga krawędzi).
+    \item \textbf{Kluczowe metody:} Gettery zwracające połączone wierzchołki. Klasa z założenia jest niemutowalna po zainicjalizowaniu.
+\end{itemize}
+
+\subsection{Klasa GraphModel}
+Klasa pełniąca rolę głównego kontenera danych w architekturze MVC. Agreguje ona wszystkie obiekty wierzchołków i krawędzi.
+\begin{itemize}
+    \item \textbf{Pola klasy:} Listy dynamiczne \texttt{List<Vertex>} oraz \texttt{List<Edge>}.
+    \item \textbf{Kluczowe metody:} Metody modyfikujące strukturę (np. \texttt{addVertex}, \texttt{clearGraph}) wykorzystywane podczas ładowania nowych danych.
+\end{itemize}
+
+\section{Interfejs Graficzny (View)}
+Pakiet widoku jest odpowiedzialny wyłącznie za renderowanie danych oraz wystawianie komponentów, z którymi użytkownik może wchodzić w interakcje.
+
+\subsection{Klasa MainWindow}
+Główna ramka aplikacji dziedzicząca po klasie \texttt{JFrame}. Jej zadaniem jest organizacja układu przestrzennego (np. za pomocą \texttt{BorderLayout}) oraz integracja paska menu, płótna do rysowania i panelu bocznego w spójną całość.
+
+\subsection{Klasa GraphCanvas}
+Autorski komponent rysujący, dziedziczący po klasie \texttt{JPanel}.
+\begin{itemize}
+    \item \textbf{Renderowanie:} Nadpisuje metodę \texttt{paintComponent(Graphics g)}. Iteruje po listach krawędzi i wierzchołków pobranych z obiektu \texttt{GraphModel}, używając narzędzi z pakietu \texttt{java.awt.Graphics2D} do rysowania linii i okręgów.
+    \item \textbf{Transformacje:} Implementuje logikę przeliczania współrzędnych modelu (wygenerowanych przez program C) na współrzędne pikselowe ekranu, uwzględniając aktualny współczynnik skalowania (zoom) oraz przesunięcie pola widzenia.
+\end{itemize}
+
+\subsection{Klasa ControlPanel}
+Panel narzędziowy (\texttt{JPanel}) umieszczony z boku ekranu. Zawiera instancje takich komponentów jak \texttt{JComboBox} (do wyboru algorytmu), \texttt{JTextField} (do edycji współrzędnych) oraz \texttt{JCheckBox} (do sterowania filtrami wyświetlania).
+
+\section{Logika Sterująca (Controller)}
+Zadaniem klas z tego pakietu jest reagowanie na akcje użytkownika. Obiekty kontrolera implementują interfejsy nasłuchiwaczy z biblioteki Swing.
+
+\subsection{Klasa GraphController}
+Główny mózg operacji. Podpina \texttt{ActionListener} do przycisków w \texttt{ControlPanel} oraz \texttt{MouseListener} do \texttt{GraphCanvas}.
+\begin{itemize}
+    \item \textbf{Obsługa zdarzeń myszy:} Po kliknięciu na płótnie, kontroler oblicza, czy w danym punkcie znajduje się wierzchołek. Jeśli tak, pobiera jego parametry i przekazuje do pól tekstowych w panelu bocznym.
+    \item \textbf{Synchronizacja:} Każda zmiana stanu w modelu (np. po wczytaniu nowego pliku lub ręcznej edycji współrzędnych) kończy się wywołaniem metody \texttt{repaint()} na obiekcie widoku, co wymusza odświeżenie interfejsu.
+\end{itemize}
+
+\section{Przetwarzanie Danych Wejściowych (Parser)}
+Aby zapewnić poprawną komunikację między modułem napisanym w języku C a aplikacją w języku Java, zaimplementowano dedykowany moduł parsujący.
+
+\subsection{Klasa FileParser}
+Odpowiada za wejście/wyjście (I/O). Jej zadaniem jest odczyt plików wynikowych dostarczonych przez program w C i przetworzenie ich na obiekty Javy.
+\begin{itemize}
+    \item \textbf{Odczyt formatu .txt:} Używa klas \texttt{BufferedReader} i \texttt{Scanner} do sekwencyjnego czytania linii, rozdzielania ich po znakach spacji i konwersji ciągów znaków na typy liczbowe \texttt{Integer} oraz \texttt{Double}.
+    \item \textbf{Odczyt formatu .bin:} Używa \texttt{DataInputStream} do bezpośredniego wczytywania bajtów, co przyspiesza proces ładowania dużych struktur grafowych.
+    \item \textbf{Walidacja:} Moduł obsługuje wyjątki \texttt{IOException} oraz \texttt{NumberFormatException}, aby w razie uszkodzonego pliku przerwać parsowanie i zgłosić błąd do kontrolera.
+\end{itemize}
+
+\end{document}
