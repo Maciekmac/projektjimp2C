@@ -90,7 +90,8 @@ int save_graph(const char* filename, Graph* g, int binary_mode) {
     // TRYB BINARNY
     if (binary_mode) {
        
-        if (fopen(&out_file, filename, "wb") != 0 || out_file == NULL) {
+	out_file = fopen(filename, "wb");
+        if (out_file == NULL) {
             fprintf(stderr, "Blad: Nie udalo sie otworzyc pliku do zapisu binarnego: %s\n", filename);
             return ERR_OUTPUT_WRITE;
         }
@@ -111,7 +112,8 @@ int save_graph(const char* filename, Graph* g, int binary_mode) {
     // TRYB TEKSTOWY
     else {
     
-        if (fopen(&out_file, filename, "w") != 0 || out_file == NULL) {
+	out_file = fopen(filename, "w");
+        if (out_file == NULL) {
             fprintf(stderr, "Blad: Nie udalo sie otworzyc pliku do zapisu tekstowego: %s\n", filename);
             return ERR_OUTPUT_WRITE;
         }
