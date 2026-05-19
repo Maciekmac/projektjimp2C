@@ -129,8 +129,26 @@ public class MainWindow extends JFrame {
         btnSaveCoords.addActionListener(e -> {
             if (currentVertex != null) {
                 try {
-                    currentVertex.setX(Double.parseDouble(txtX.getText().replace(",", ".")));
-                    currentVertex.setY(Double.parseDouble(txtY.getText().replace(",", ".")));
+                    double newX = Double.parseDouble(txtX.getText().replace(",", "."));
+                    double newY = Double.parseDouble(txtY.getText().replace(",", "."));
+
+                    // Dynamicznie pobieramy maksymalne dostępne wymiary płótna w celu określenia limitów
+                    double maxX = canvas.getWidth();
+                    double maxY = canvas.getHeight();
+
+                    // Walidacja dynamiczna obszaru widocznego
+                    if (newX < 0.0 || newX > maxX || newY < 0.0 || newY > maxY) {
+                        JOptionPane.showMessageDialog(this,
+                                "Współrzędne wykraczają poza widoczny obszar roboczy!\n" +
+                                        "Wprowadź X w przedziale [0 - " + (int)maxX + "] oraz Y w przedziale [0 - " + (int)maxY + "].",
+                                "Ostrzeżenie",
+                                JOptionPane.WARNING_MESSAGE);
+                        return; // Przerywamy operację, nie zapisujemy błędnych danych
+                    }
+
+                    // Jeśli wartości są w normie, aktualizujemy model
+                    currentVertex.setX(newX);
+                    currentVertex.setY(newY);
                     canvas.repaint(); // Po zapisie przerysowujemy ekran
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Wprowadź poprawne liczby!", "Błąd", JOptionPane.ERROR_MESSAGE);
