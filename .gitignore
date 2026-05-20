@@ -4,3 +4,4 @@ a.out
 target/
 build/
 .idea/
+out/
