@@ -73,7 +73,7 @@ Panel ułatwiający sterowanie widokiem i modyfikację parametrów:
     \item \textbf{Wybór algorytmu:} Lista rozwijana pozwalająca zmienić metodę układania wierzchołków.
     \item \textbf{Modyfikacja wierzchołka:} Pola numeryczne "X" i "Y" umożliwiające ręczną zmianę pozycji zaznaczonego wierzchołka.
     \item \textbf{Opcje wyświetlania (Filtry):} Zestaw przełączników (checkbox) włączających i wyłączających widoczność ID wierzchołków oraz wag krawędzi.
-    \item \textbf{Kontrola widoku:} Suwak zbliżenia oraz przycisk "Resetuj widok", przywracający graf do środka ekranu i domyślnej skali.
+    \item \textbf{Kontrola widoku:} Suwak zbliżenia (zoom) oraz przycisk "Wyśrodkuj graf", który dynamicznie oblicza środek ciężkości obecnego układu wierzchołków i przesuwa cały graf na środek widocznego płótna roboczego.
 \end{itemize}
 
 \section{Formaty Danych (Wejście i Wyjście)}
