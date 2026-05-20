@@ -121,4 +121,41 @@ public class GraphCanvas extends JPanel {
             }
         }
     }
+    // Wyśrodkowanie grafu
+    public void centerGraph() {
+        if (model.getVertices().isEmpty()) return;
+
+        // Znalezienie skrajnych współrzędnych
+        double minX = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxY = Double.MIN_VALUE;
+
+        for (Vertex v : model.getVertices()) {
+            if (v.getX() < minX) minX = v.getX();
+            if (v.getX() > maxX) maxX = v.getX();
+            if (v.getY() < minY) minY = v.getY();
+            if (v.getY() > maxY) maxY = v.getY();
+        }
+
+        // Wyliczenie środka obecnego układu współrzędnych
+        double graphCenterX = (minX + maxX) / 2.0;
+        double graphCenterY = (minY + maxY) / 2.0;
+
+        // Wyliczenie środka płótna (uwzględniając aktualny zoom)
+        double canvasCenterX = (getWidth() / zoomFactor) / 2.0;
+        double canvasCenterY = (getHeight() / zoomFactor) / 2.0;
+
+        // Wyliczenie wektora przesunięcia
+        double shiftX = canvasCenterX - graphCenterX;
+        double shiftY = canvasCenterY - graphCenterY;
+
+        // Zastosowanie przesunięcia do wszystkich wierzchołków
+        for (Vertex v : model.getVertices()) {
+            v.setX(v.getX() + shiftX);
+            v.setY(v.getY() + shiftY);
+        }
+
+        repaint(); // Odświeżenie ekranu
+    }
 }

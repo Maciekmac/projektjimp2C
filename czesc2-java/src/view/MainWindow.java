@@ -98,87 +98,118 @@ public class MainWindow extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createTitledBorder("Panel Narzędziowy"));
-        panel.setPreferredSize(new Dimension(220, 0));
+        panel.setPreferredSize(new Dimension(260, 0));
 
+        // Zgrupowanie checkboxów, żeby ich kwadraciki były idealnie w pionie
         JCheckBox chkLabels = new JCheckBox("Pokaż ID wierzchołków", true);
         JCheckBox chkWeights = new JCheckBox("Pokaż Wagi krawędzi", true);
-
         chkLabels.addActionListener(e -> canvas.setShowLabels(chkLabels.isSelected()));
         chkWeights.addActionListener(e -> canvas.setShowWeights(chkWeights.isSelected()));
 
-        JLabel lblZoom = new JLabel("Skala (Zoom): 100%");
-        JSlider sliderZoom = new JSlider(50, 200, 100);
+        JPanel checksWrapper = new JPanel();
+        checksWrapper.setLayout(new BoxLayout(checksWrapper, BoxLayout.Y_AXIS));
+        checksWrapper.add(chkLabels);
+        checksWrapper.add(chkWeights);
+        checksWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Skala i suwak
+        JLabel lblZoom = new JLabel("Skala (Zoom): 100%");
+        lblZoom.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JSlider sliderZoom = new JSlider(50, 200, 100);
+        sliderZoom.setAlignmentX(Component.CENTER_ALIGNMENT);
         sliderZoom.addChangeListener(e -> {
             double factor = sliderZoom.getValue() / 100.0;
             lblZoom.setText("Skala (Zoom): " + sliderZoom.getValue() + "%");
             canvas.setZoomFactor(factor);
         });
 
-        // --- NOWE: Pola edycji wierzchołka ---
-        lblSelectedId = new JLabel("Zaznaczony wierzchołek: Brak");
-        txtX = new JTextField(5);
-        txtY = new JTextField(5);
-        txtX.setEnabled(false); // Zablokowane, dopóki czegoś nie klikniesz
-        txtY.setEnabled(false);
-        txtX.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        txtY.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        JButton btnSaveCoords = new JButton("Zapisz Współrzędne");
+        // Przycisk wyśrodkowania (narzucamy stały, ładny rozmiar)
+        JButton btnCenter = new JButton("Wyśrodkuj graf");
+        btnCenter.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnCenter.setMaximumSize(new Dimension(160, 30));
+        btnCenter.addActionListener(e -> {
+            canvas.centerGraph();
+            if (currentVertex != null) {
+                updateFieldsForVertex(currentVertex);
+            }
+        });
 
-        // Akcja zapisywania z palca
+        // Pola edycji wierzchołka
+        lblSelectedId = new JLabel("Zaznaczony wierzchołek: Brak");
+        lblSelectedId.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblX = new JLabel("Współrzędna X:");
+        lblX.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtX = new JTextField(5);
+        txtX.setEnabled(false);
+        txtX.setMaximumSize(new Dimension(160, 25)); // Blokujemy rozciąganie na pełną szerokość
+        txtX.setHorizontalAlignment(JTextField.CENTER); // Liczby wpisują się na środku pola!
+
+        JLabel lblY = new JLabel("Współrzędna Y:");
+        lblY.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtY = new JTextField(5);
+        txtY.setEnabled(false);
+        txtY.setMaximumSize(new Dimension(160, 25)); // Blokujemy rozciąganie na pełną szerokość
+        txtY.setHorizontalAlignment(JTextField.CENTER); // Liczby wpisują się na środku pola!
+
+        // Przycisk zapisu (narzucamy IDENTYCZNY rozmiar co przycisk wyśrodkowania)
+        JButton btnSaveCoords = new JButton("Zapisz Współrzędne");
+        btnSaveCoords.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnSaveCoords.setMaximumSize(new Dimension(160, 30));
+
         btnSaveCoords.addActionListener(e -> {
             if (currentVertex != null) {
                 try {
                     double newX = Double.parseDouble(txtX.getText().replace(",", "."));
                     double newY = Double.parseDouble(txtY.getText().replace(",", "."));
-
-                    // Dynamicznie pobieramy maksymalne dostępne wymiary płótna w celu określenia limitów
                     double maxX = canvas.getWidth();
                     double maxY = canvas.getHeight();
 
-                    // Walidacja dynamiczna obszaru widocznego
                     if (newX < 0.0 || newX > maxX || newY < 0.0 || newY > maxY) {
                         JOptionPane.showMessageDialog(this,
                                 "Współrzędne wykraczają poza widoczny obszar roboczy!\n" +
                                         "Wprowadź X w przedziale [0 - " + (int)maxX + "] oraz Y w przedziale [0 - " + (int)maxY + "].",
                                 "Ostrzeżenie",
                                 JOptionPane.WARNING_MESSAGE);
-                        return; // Przerywamy operację, nie zapisujemy błędnych danych
+                        return;
                     }
 
-                    // Jeśli wartości są w normie, aktualizujemy model
                     currentVertex.setX(newX);
                     currentVertex.setY(newY);
-                    canvas.repaint(); // Po zapisie przerysowujemy ekran
+                    canvas.repaint();
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Wprowadź poprawne liczby!", "Błąd", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
+        // Finalne układanie w panelu (idealne, proporcjonalne odstępy)
         panel.add(Box.createVerticalStrut(10));
-        panel.add(chkLabels);
-        panel.add(chkWeights);
+        panel.add(checksWrapper);
         panel.add(Box.createVerticalStrut(20));
         panel.add(lblZoom);
         panel.add(sliderZoom);
+        panel.add(Box.createVerticalStrut(15));
+        panel.add(btnCenter);
 
-        // Dodajemy nowe elementy na dół panelu
         panel.add(Box.createVerticalStrut(20));
-        panel.add(new JSeparator()); // Cienka linia oddzielająca
-        panel.add(Box.createVerticalStrut(10));
+        panel.add(new JSeparator());
+        panel.add(Box.createVerticalStrut(15));
+
         panel.add(lblSelectedId);
-        panel.add(new JLabel("Współrzędna X:"));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(lblX);
         panel.add(txtX);
-        panel.add(new JLabel("Współrzędna Y:"));
-        panel.add(txtY);
         panel.add(Box.createVerticalStrut(5));
+        panel.add(lblY);
+        panel.add(txtY);
+        panel.add(Box.createVerticalStrut(15));
         panel.add(btnSaveCoords);
 
         return panel;
     }
 
-    // --- NOWA METODA: Odbiera dane od płótna ---
+    // Odbieranie danych od płótna
     public void updateFieldsForVertex(Vertex v) {
         currentVertex = v;
         lblSelectedId.setText("Zaznaczony wierzchołek ID: " + v.getId());
