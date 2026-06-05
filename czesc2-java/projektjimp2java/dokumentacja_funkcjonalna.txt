@@ -73,7 +73,7 @@ Panel ułatwiający sterowanie widokiem i modyfikację parametrów:
     \item \textbf{Wybór algorytmu:} Lista rozwijana pozwalająca zmienić metodę układania wierzchołków.
     \item \textbf{Modyfikacja wierzchołka:} Pola numeryczne "X" i "Y" umożliwiające ręczną zmianę pozycji zaznaczonego wierzchołka.
     \item \textbf{Opcje wyświetlania (Filtry):} Zestaw przełączników (checkbox) włączających i wyłączających widoczność ID wierzchołków oraz wag krawędzi.
-    \item \textbf{Kontrola widoku:} Suwak zbliżenia oraz przycisk "Resetuj widok", przywracający graf do środka ekranu i domyślnej skali.
+    \item \textbf{Kontrola widoku:} Suwak zbliżenia (zoom) oraz przycisk "Wyśrodkuj graf", który dynamicznie oblicza środek ciężkości obecnego układu wierzchołków i przesuwa cały graf na środek widocznego płótna roboczego.
 \end{itemize}
 
 \section{Formaty Danych (Wejście i Wyjście)}
@@ -96,6 +96,7 @@ Aplikacja została zabezpieczona przed podstawowymi błędami ze strony użytkow
     \item \textbf{Błąd odczytu pliku:} Jeśli wybrany plik nie istnieje, jest uszkodzony lub ma nieprawidłowe uprawnienia, program wyświetli komunikat: \textit{"Nie udało się otworzyć pliku. Sprawdź, czy posiadasz odpowiednie uprawnienia i spróbuj ponownie."}
     \item \textbf{Niezgodność formatu danych:} Jeżeli wczytywany plik tekstowy (.txt) posiada nieprawidłową składnię (np. litery w miejscu wymaganych współrzędnych numerycznych), wyświetlony zostanie komunikat: \textit{"Błąd formatu pliku. Upewnij się, że plik zawiera poprawne współrzędne oddzielone białymi znakami."} Wczytywanie zostanie przerwane.
     \item \textbf{Błędne wartości w panelu modyfikacji:} Jeśli po zaznaczeniu wierzchołka użytkownik wprowadzi do pól edycji X/Y znaki inne niż liczby zmiennoprzecinkowe, próba zatwierdzenia zmiany wywoła komunikat: \textit{"Wprowadzono nieprawidłowe wartości. Współrzędne muszą być wartościami liczbowymi."} Zmiany nie zostaną zaaplikowane.
+\item \textbf{Współrzędne poza obszarem roboczym:} W przypadku ręcznej modyfikacji (Zapisz Współrzędne), program dynamicznie sprawdza aktualną rozdzielczość płótna. Próba wpisania X lub Y wykraczającego poza widoczny ekran (tzw. zjawisko clippingu) zostanie zablokowana komunikatem: \textit{"Współrzędne wykraczają poza widoczny obszar roboczy! Wprowadź X w przedziale [0 - max] oraz Y w przedziale [0 - max]."}.
 \end{itemize}
 
 \end{document}

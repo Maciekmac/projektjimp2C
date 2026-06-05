@@ -75,10 +75,11 @@ Autorski komponent rysujący, dziedziczący po klasie \texttt{JPanel}.
 \begin{itemize}
     \item \textbf{Renderowanie:} Nadpisuje metodę \texttt{paintComponent(Graphics g)}. Iteruje po listach krawędzi i wierzchołków pobranych z obiektu \texttt{GraphModel}, używając narzędzi z pakietu \texttt{java.awt.Graphics2D} do rysowania linii i okręgów.
     \item \textbf{Transformacje:} Implementuje logikę przeliczania współrzędnych modelu (wygenerowanych przez program C) na współrzędne pikselowe ekranu, uwzględniając aktualny współczynnik skalowania (zoom) oraz przesunięcie pola widzenia.
+    \item \textbf{Mechanizm wyśrodkowania:} Klasa zawiera metodę \texttt{centerGraph()}, która wyznacza obszar graniczny grafu (Bounding Box) wyszukując skrajne współrzędne X oraz Y. Następnie oblicza wektor przesunięcia względem aktualnego środka płótna (uwzględniając zoom) i aplikuje translację na wszystkich obiektach \texttt{Vertex}.
 \end{itemize}
 
 \subsection{Klasa ControlPanel}
-Panel narzędziowy (\texttt{JPanel}) umieszczony z boku ekranu. Zawiera instancje takich komponentów jak \texttt{JComboBox} (do wyboru algorytmu), \texttt{JTextField} (do edycji współrzędnych) oraz \texttt{JCheckBox} (do sterowania filtrami wyświetlania).
+Panel narzędziowy (\texttt{JPanel}) umieszczony z boku ekranu. Zawiera instancje takich komponentów jak \texttt{JComboBox} (do wyboru algorytmu), \texttt{JTextField} (do edycji współrzędnych) oraz \texttt{JCheckBox} (do sterowania filtrami wyświetlania). Układ komponentów zarządzany jest przez \texttt{BoxLayout}. Przycisk zapisu współrzędnych implementuje dynamiczną walidację granic okna w czasie rzeczywistym – wykorzystuje metody \texttt{getWidth()} oraz \texttt{getHeight()} obiektu \texttt{GraphCanvas}, co skutecznie zapobiega przesunięciu wierzchołków poza renderowany obszar.
 
 \section{Logika Sterująca (Controller)}
 Zadaniem klas z tego pakietu jest reagowanie na akcje użytkownika. Obiekty kontrolera implementują interfejsy nasłuchiwaczy z biblioteki Swing.
