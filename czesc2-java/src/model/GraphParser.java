@@ -19,11 +19,17 @@ public class GraphParser {
                 if (line.isEmpty()) continue;
 
                 String[] parts = line.split("\\s+");
-                if (parts.length >= 3) {
+                if (parts.length != 3) {
+                    throw new IOException("Błąd formatu! Oczekiwano dokładnie 3 wartości, a wykryto śmieci w linii: " + line);
+                }
+
+                try {
                     int id = Integer.parseInt(parts[0]);
                     double x = Double.parseDouble(parts[1].replace(",", "."));
                     double y = Double.parseDouble(parts[2].replace(",", "."));
                     model.addVertex(new Vertex(id, x, y));
+                } catch (NumberFormatException e) {
+                    throw new IOException("Wykryto litery w miejscu wspolrzednych numerycznych w linii: " + line);
                 }
             }
         }
@@ -38,7 +44,11 @@ public class GraphParser {
                 if (line.isEmpty()) continue;
 
                 String[] parts = line.split("\\s+");
-                if (parts.length >= 4) {
+                if (parts.length != 4) {
+                    throw new IOException("Błąd formatu! Oczekiwano dokładnie 4 wartości, a wykryto śmieci w linii: " + line);
+                }
+
+                try {
                     int v1_id = Integer.parseInt(parts[1]);
                     int v2_id = Integer.parseInt(parts[2]);
                     double weight = Double.parseDouble(parts[3].replace(",", "."));
@@ -48,7 +58,11 @@ public class GraphParser {
 
                     if (vertex1 != null && vertex2 != null) {
                         model.addEdge(new Edge(vertex1, vertex2, weight));
+                    } else {
+                        throw new IOException("Krawędź odwołuje się do nieistniejących ID wierzchołków w linii: " + line);
                     }
+                } catch (NumberFormatException e) {
+                    throw new IOException("Wykryto nieprawidłowy format liczbowy podczas wczytywania krawędzi w linii: " + line);
                 }
             }
         }
