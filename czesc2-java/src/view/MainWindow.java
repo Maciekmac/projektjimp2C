@@ -148,6 +148,75 @@ public class MainWindow extends JFrame {
         panel.setBorder(BorderFactory.createTitledBorder("Panel Narzędziowy"));
         panel.setPreferredSize(new Dimension(260, 0));
 
+        // Zdalne sterowanie modułem C
+        JLabel lblAlgo = new JLabel("Algorytm rozmieszczania:");
+        lblAlgo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        String[] algos = {"Fruchterman-Reingold (Siłowy)", "Tutte Embedding (Barycentryczny)"};
+        JComboBox<String> comboAlgo = new JComboBox<>(algos);
+        comboAlgo.setMaximumSize(new Dimension(220, 25));
+        comboAlgo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton btnRunEngine = new JButton("Przelicz graf (Silnik C)");
+        btnRunEngine.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRunEngine.setMaximumSize(new Dimension(180, 30));
+        btnRunEngine.setBackground(new Color(46, 204, 113)); // Zielony akcent
+        btnRunEngine.setForeground(Color.WHITE);
+
+        btnRunEngine.addActionListener(e -> {
+            try {
+                String cFolderPath = "C:\\Users\\dulny\\IdeaProjects\\projektjimp2C\\czesc1-C";
+                java.io.File cDir = new java.io.File(cFolderPath);
+
+                JFileChooser inputChooser = new JFileChooser(cDir);
+                if (inputChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                    java.io.File selectedFile = inputChooser.getSelectedFile();
+                    java.io.File workingFile = new java.io.File(cDir, "working_input.txt");
+                    java.nio.file.Files.copy(selectedFile.toPath(), workingFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+                    // Komenda
+                    String algoFlag = (comboAlgo.getSelectedIndex() == 1) ? " -a" : "";
+                    String commandStr = "./programC working_input.txt" + algoFlag;
+
+                    ProcessBuilder pb = new ProcessBuilder("wsl", "bash", "-c", commandStr);
+                    pb.directory(cDir);
+                    Process process = pb.start();
+
+                    // CZYTANIE Z KONSOLI
+                    java.util.Scanner sc = new java.util.Scanner(process.getInputStream());
+                    model.clear();
+
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("Wierzcho[^:]+?\\s+(\\d+):\\s+X=([\\d.-]+),\\s+Y=([\\d.-]+)");
+                    while (sc.hasNextLine()) {
+                        String line = sc.nextLine();
+                        java.util.regex.Matcher matcher = pattern.matcher(line);
+
+                        // Tylko regex! Bez starego "split"
+                        if (matcher.find()) {
+                            try {
+                                int id = Integer.parseInt(matcher.group(1));
+                                double x = Double.parseDouble(matcher.group(2));
+                                double y = Double.parseDouble(matcher.group(3));
+                                model.addVertex(new Vertex(id, x, y));
+                            } catch (Exception ex) {
+                                System.err.println("Błąd konwersji liczb: " + line);
+                            }
+                        }
+                    }
+                    process.waitFor();
+
+                    // Wczytanie krawędzi (z pliku)
+                    GraphParser.loadEdgesFromText(workingFile.getAbsolutePath(), model);
+
+                    canvas.centerGraph();
+                    canvas.repaint();
+                    JOptionPane.showMessageDialog(this, "Sukces! Graf przeliczony i wczytany.");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Błąd: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        });
+
         // Zgrupowanie checkboxów, żeby ich kwadraciki były idealnie w pionie
         JCheckBox chkLabels = new JCheckBox("Pokaż ID wierzchołków", true);
         JCheckBox chkWeights = new JCheckBox("Pokaż Wagi krawędzi", true);
@@ -231,8 +300,17 @@ public class MainWindow extends JFrame {
             }
         });
 
-        // Finalne układanie w panelu (idealne, proporcjonalne odstępy)
+        // Finalne układanie w panelu
         panel.add(Box.createVerticalStrut(10));
+        panel.add(lblAlgo);
+        panel.add(comboAlgo);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(btnRunEngine);
+
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(new JSeparator());
+        panel.add(Box.createVerticalStrut(15));
+
         panel.add(checksWrapper);
         panel.add(Box.createVerticalStrut(20));
         panel.add(lblZoom);
