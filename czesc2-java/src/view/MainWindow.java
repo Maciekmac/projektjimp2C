@@ -39,6 +39,8 @@ public class MainWindow extends JFrame {
         JMenuItem itemLoadTxt = new JMenuItem("Wczytaj Współrzędne (TXT)...");
         JMenuItem itemLoadBin = new JMenuItem("Wczytaj Współrzędne (BIN)...");
         JMenuItem itemLoadEdges = new JMenuItem("Wczytaj Krawędzie (TXT)...");
+        JMenuItem itemSaveTxt = new JMenuItem("Zapisz Współrzędne (TXT)...");
+        JMenuItem itemExportPng = new JMenuItem("Eksportuj Graf do obrazka (PNG)...");
 
         itemLoadTxt.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
@@ -85,10 +87,56 @@ public class MainWindow extends JFrame {
             }
         });
 
+        itemSaveTxt.addActionListener(e -> {
+            if (model.getVertices().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nie ma nic do zapisania!", "Błąd", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            JFileChooser chooser = new JFileChooser();
+            if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                try (java.io.PrintWriter out = new java.io.PrintWriter(chooser.getSelectedFile())) {
+                    for (Vertex v : model.getVertices()) {
+                        out.println(v.getId() + " " + String.format(java.util.Locale.US, "%.6f", v.getX()) + " " + String.format(java.util.Locale.US, "%.6f", v.getY()));
+                    }
+                    JOptionPane.showMessageDialog(this, "Pomyślnie zapisano plik TXT!");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Błąd zapisu: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        itemExportPng.addActionListener(e -> {
+            if (model.getVertices().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nie ma grafu do wyeksportowania!", "Błąd", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            JFileChooser chooser = new JFileChooser();
+            if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    java.io.File file = chooser.getSelectedFile();
+                    if (!file.getName().toLowerCase().endsWith(".png")) {
+                        file = new java.io.File(file.getAbsolutePath() + ".png");
+                    }
+                    // Rysowanie niewidzialnego płótna na obrazek
+                    java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(canvas.getWidth(), canvas.getHeight(), java.awt.image.BufferedImage.TYPE_INT_RGB);
+                    java.awt.Graphics2D g2d = image.createGraphics();
+                    canvas.paintAll(g2d); // zrzuca wszystko co widać na płótnie
+                    g2d.dispose();
+                    javax.imageio.ImageIO.write(image, "png", file);
+                    JOptionPane.showMessageDialog(this, "Wyeksportowano obrazek PNG!");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Błąd eksportu: " + ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         menuFile.add(itemLoadTxt);
         menuFile.add(itemLoadBin);
-        menuFile.addSeparator();
         menuFile.add(itemLoadEdges);
+        menuFile.addSeparator(); // pozioma kreska oddzielająca
+        menuFile.add(itemSaveTxt);
+        menuFile.add(itemExportPng);
+
         menuBar.add(menuFile);
 
         return menuBar;
