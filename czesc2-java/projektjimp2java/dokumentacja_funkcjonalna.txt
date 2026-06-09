@@ -40,6 +40,7 @@ Niniejszy dokument stanowi specyfikację funkcjonalną aplikacji z graficznym in
 \section{Wypis Funkcjonalności Programu}
 Zgodnie z założeniami projektowymi, aplikacja udostępnia użytkownikowi następujące funkcjonalności:
 \begin{itemize}
+    \item \textbf{Integracja z silnikiem obliczeniowym C:} Bezpośrednie uruchamianie modułu C z poziomu interfejsu Javy za pomocą środowiska WSL, wraz z przekazywaniem plików i odbieraniem wyników w czasie rzeczywistym.
     \item \textbf{Wczytywanie danych:} Obsługa plików wejściowych zawierających strukturę grafu oraz współrzędne, zapisanych w formacie tekstowym (.txt) lub binarnym (.bin).
     \item \textbf{Wizualizacja grafu:} Automatyczne rysowanie układu wierzchołków i łączących je krawędzi (wraz z ich wagami) na dwuwymiarowej płaszczyźnie.
     \item \textbf{Wybór algorytmu:} Możliwość przeliczania lub dostosowywania układu grafu na podstawie wybranego algorytmu wizualizacji.
@@ -70,7 +71,8 @@ Centralna część aplikacji, w której rysowany jest graf. Użytkownik może wc
 \subsection{Panel Narzędziowy (Prawy pasek)}
 Panel ułatwiający sterowanie widokiem i modyfikację parametrów:
 \begin{itemize}
-    \item \textbf{Wybór algorytmu:} Lista rozwijana pozwalająca zmienić metodę układania wierzchołków.
+    \item \textbf{Uruchomienie obliczeń:} Przycisk "Przelicz graf (Silnik C)". Jego kliknięcie powoduje wyświetlenie okna instruktażowego, a następnie poproszenie użytkownika o wskazanie pliku wejściowego (np. z definicją krawędzi), który zostaje automatycznie przekazany do silnika.
+    \item \textbf{Wybór algorytmu:} Lista rozwijana pozwalająca zmienić metodę układania wierzchołków dla modułu C.
     \item \textbf{Modyfikacja wierzchołka:} Pola numeryczne "X" i "Y" umożliwiające ręczną zmianę pozycji zaznaczonego wierzchołka.
     \item \textbf{Opcje wyświetlania (Filtry):} Zestaw przełączników (checkbox) włączających i wyłączających widoczność ID wierzchołków oraz wag krawędzi.
     \item \textbf{Kontrola widoku:} Suwak zbliżenia (zoom) oraz przycisk "Wyśrodkuj graf", który dynamicznie oblicza środek ciężkości obecnego układu wierzchołków i przesuwa cały graf na środek widocznego płótna roboczego.
@@ -90,14 +92,14 @@ Użytkownik może wczytać plik w dwóch formatach:
 Wynikiem działania programu, w przypadku chęci zapisu, jest plik tekstowy. Będzie on zawierał zaktualizowane (na skutek użycia algorytmu lub ręcznej modyfikacji) pozycje wierzchołków w analogicznym formacie \texttt{<ID> <X> <Y>}.
 
 \section{Sytuacje Wyjątkowe i Komunikaty Błędów}
-Aplikacja została zabezpieczona przed podstawowymi błędami ze strony użytkownika. Wystąpienie błędu będzie sygnalizowane wyraźnym okienkiem dialogowym z ostrzeżeniem.
+Aplikacja została zabezpieczona przed podstawowymi błędami ze strony użytkownika oraz systemu. Wystąpienie błędu będzie sygnalizowane wyraźnym okienkiem dialogowym z ostrzeżeniem.
 
 \begin{itemize}
-    \item \textbf{Błąd odczytu pliku:} Jeśli wybrany plik nie istnieje, jest uszkodzony lub ma nieprawidłowe uprawnienia, program wyświetli komunikat: \textit{"Nie udało się otworzyć pliku. Sprawdź, czy posiadasz odpowiednie uprawnienia i spróbuj ponownie."}
-    \item \textbf{Niezgodność formatu danych:} Jeżeli wczytywany plik tekstowy (.txt) posiada nieprawidłową składnię (np. litery w miejscu wymaganych współrzędnych numerycznych), wyświetlony zostanie komunikat: \textit{"Błąd formatu pliku. Upewnij się, że plik zawiera poprawne współrzędne oddzielone białymi znakami."} Wczytywanie zostanie przerwane.
-    \item \textbf{Błędne wartości w panelu modyfikacji:} Jeśli po zaznaczeniu wierzchołka użytkownik wprowadzi do pól edycji X/Y znaki inne niż liczby zmiennoprzecinkowe, próba zatwierdzenia zmiany wywoła komunikat: \textit{"Wprowadzono nieprawidłowe wartości. Współrzędne muszą być wartościami liczbowymi."} Zmiany nie zostaną zaaplikowane.
-\item \textbf{Współrzędne poza obszarem roboczym:} W przypadku ręcznej modyfikacji (Zapisz Współrzędne), program dynamicznie sprawdza aktualną rozdzielczość płótna. Próba wpisania X lub Y wykraczającego poza widoczny ekran (tzw. zjawisko clippingu) zostanie zablokowana komunikatem: \textit{"Współrzędne wykraczają poza widoczny obszar roboczy! Wprowadź X w przedziale [0 - max] oraz Y w przedziale [0 - max]."}.
-\item \textbf{Niezgodność formatu danych:} Program rygorystycznie weryfikuje strukturę każdego wiersza. Wymaga podania dokładnie 3 parametrów dla definicji wierzchołka oraz 4 dla krawędzi. Jeżeli plik tekstowy posiada nieprawidłową składnię, zawiera nadmiarowe znaki (tzw. "śmieci" na końcu wiersza) lub litery w miejscu współrzędnych numerycznych, parsowanie zostaje natychmiast przerwane. Aplikacja przechwytuje wyjątek i wyświetla okno dialogowe ze szczegółowym komunikatem błędu (np. \textit{"Błąd formatu! Oczekiwano dokładnie 3 wartości..."}), a następnie bezpiecznie powraca do stanu gotowości, chroniąc program przed nieoczekiwaną awarią.
+    \item \textbf{Błąd odczytu pliku:} Jeśli wybrany plik nie istnieje, jest uszkodzony lub ma nieprawidłowe uprawnienia, program wyświetli komunikat.
+    \item \textbf{Błąd integracji z silnikiem C:} W przypadku braku dostępu do środowiska WSL, braku pliku wykonywalnego modułu C lub błędów obliczeniowych, Java przechwyci błąd i wyświetli go użytkownikowi w czytelnym oknie dialogowym, chroniąc interfejs przed zawieszeniem.
+    \item \textbf{Błędne wartości w panelu modyfikacji:} Jeśli po zaznaczeniu wierzchołka użytkownik wprowadzi do pól edycji X/Y znaki inne niż liczby zmiennoprzecinkowe, próba zatwierdzenia zmiany wywoła komunikat. Zmiany nie zostaną zaaplikowane.
+    \item \textbf{Współrzędne poza obszarem roboczym:} Próba wpisania X lub Y wykraczającego poza widoczny ekran zostanie zablokowana specjalnym komunikatem.
+    \item \textbf{Niezgodność formatu danych:} Program rygorystycznie weryfikuje strukturę każdego wiersza. Wymaga podania dokładnie 3 parametrów dla definicji wierzchołka oraz 4 dla krawędzi. Aplikacja przechwytuje wyjątek i wyświetla okno dialogowe ze szczegółowym komunikatem błędu.
 \end{itemize}
 
 \end{document}
