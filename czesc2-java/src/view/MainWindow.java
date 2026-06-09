@@ -167,6 +167,12 @@ public class MainWindow extends JFrame {
                 String cFolderPath = "C:\\Users\\dulny\\IdeaProjects\\projektjimp2C\\czesc1-C";
                 java.io.File cDir = new java.io.File(cFolderPath);
 
+                JOptionPane.showMessageDialog(this,
+                        "Proszę wskaż plik tekstowy z listą krawędzi grafu.\n" +
+                                "Silnik obliczy na jego podstawie nowy układ wierzchołków.",
+                        "Wybór danych wejściowych",
+                        JOptionPane.INFORMATION_MESSAGE);
+
                 JFileChooser inputChooser = new JFileChooser(cDir);
                 if (inputChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                     java.io.File selectedFile = inputChooser.getSelectedFile();
