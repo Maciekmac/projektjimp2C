@@ -31,9 +31,7 @@
 Niniejszy dokument stanowi dokumentację implementacyjną dla aplikacji okienkowej napisanej w języku Java, z wykorzystaniem biblioteki Swing. Aplikacja stanowi drugą część projektu i służy do wizualizacji grafów planarnych na podstawie danych wygenerowanych przez moduł napisany w języku C. Dokument pełni rolę przewodnika po kodzie, ułatwiającego jego zrozumienie, pielęgnację oraz ewentualny dalszy rozwój.
 
 \section{Architektura Systemu i Wzorce Projektowe}
-Głównym wzorcem projektowym zastosowanym w aplikacji jest \textbf{MVC (Model-View-Controller)}. Wzorzec ten pozwala na logiczne i fizyczne oddzielenie warstwy przechowującej dane od interfejsu graficznego oraz logiki sterującej operacjami. 
-
-Aby zachować przejrzystość kodu, system został podzielony na następujące pakiety:
+Głównym wzorcem projektowym zastosowanym w aplikacji jest \textbf{MVC (Model-View-Controller)}. Wzorzec ten pozwala na logiczne i fizyczne oddzielenie warstwy przechowującej dane od interfejsu graficznego oraz logiki sterującej operacjami. Aby zachować przejrzystość kodu, system został podzielony na następujące pakiety:
 \begin{itemize}
     \item \textbf{\texttt{model}} – pakiet zawierający klasy reprezentujące strukturę grafu oraz operacje na plikach.
     \item \textbf{\texttt{view}} – pakiet grupujący klasy interfejsu graficznego (GUI), zbudowane w oparciu o komponenty biblioteki Swing.
@@ -41,7 +39,7 @@ Aby zachować przejrzystość kodu, system został podzielony na następujące p
 \end{itemize}
 
 \section{Struktura Danych (Model)}
-Fundamentem aplikacji jest pakiet modelu, który przechowuje abstrakcyjną reprezentację grafu, niezależną od widoku. 
+Fundamentem aplikacji jest pakiet modelu, który przechowuje abstrakcyjną reprezentację grafu, niezależną od widoku.
 
 \subsection{Klasa Vertex}
 Klasa reprezentująca pojedynczy wierzchołek grafu. Przechowuje ona podstawowe parametry fizyczne wyliczone przez moduł C.
@@ -61,14 +59,14 @@ Klasa reprezentująca pojedynczą krawędź grafu, łączącą dwa punkty.
 Klasa pełniąca rolę głównego kontenera danych w architekturze MVC. Agreguje ona wszystkie obiekty wierzchołków i krawędzi.
 \begin{itemize}
     \item \textbf{Pola klasy:} Listy dynamiczne \texttt{List<Vertex>} oraz \texttt{List<Edge>}.
-    \item \textbf{Kluczowe metody:} Metody modyfikujące strukturę (np. \texttt{addVertex}, \texttt{clearGraph}) wykorzystywane podczas ładowania nowych danych.
+    \item \textbf{Kluczowe metody:} Metody modyfikujące strukturę (np. \texttt{addVertex}, \texttt{clear}) wykorzystywane podczas ładowania nowych danych.
 \end{itemize}
 
 \section{Interfejs Graficzny (View)}
 Pakiet widoku jest odpowiedzialny wyłącznie za renderowanie danych oraz wystawianie komponentów, z którymi użytkownik może wchodzić w interakcje.
 
 \subsection{Klasa MainWindow}
-Główna ramka aplikacji dziedzicząca po klasie \texttt{JFrame}. Jej zadaniem jest organizacja układu przestrzennego (np. za pomocą \texttt{BorderLayout}) oraz integracja paska menu, płótna do rysowania i panelu bocznego w spójną całość.
+Główna ramka aplikacji dziedzicząca po klasie \texttt{JFrame}. Jej zadaniem jest organizacja układu przestrzennego (np. za pomocą \texttt{BorderLayout}) oraz integracja paska menu, płótna do rysowania i panelu bocznego w spójną całość. Zaimplementowany pasek menu umożliwia wczytywanie plików, zapis zmienionych współrzędnych (\texttt{.txt}) oraz bezpośredni eksport aktualnego widoku grafu do pliku graficznego (\texttt{.png}).
 
 \subsection{Klasa GraphCanvas}
 Autorski komponent rysujący, dziedziczący po klasie \texttt{JPanel}.
@@ -79,7 +77,7 @@ Autorski komponent rysujący, dziedziczący po klasie \texttt{JPanel}.
 \end{itemize}
 
 \subsection{Klasa ControlPanel}
-Panel narzędziowy (\texttt{JPanel}) umieszczony z boku ekranu. Zawiera instancje takich komponentów jak \texttt{JComboBox} (do wyboru algorytmu), \texttt{JTextField} (do edycji współrzędnych) oraz \texttt{JCheckBox} (do sterowania filtrami wyświetlania). Układ komponentów zarządzany jest przez \texttt{BoxLayout}. Przycisk zapisu współrzędnych implementuje dynamiczną walidację granic okna w czasie rzeczywistym – wykorzystuje metody \texttt{getWidth()} oraz \texttt{getHeight()} obiektu \texttt{GraphCanvas}, co skutecznie zapobiega przesunięciu wierzchołków poza renderowany obszar.
+Panel narzędziowy (\texttt{JPanel}) umieszczony z boku ekranu. Zawiera instancje takich komponentów jak \texttt{JComboBox} (do wyboru algorytmu), \texttt{JTextField} (do edycji współrzędnych) oraz \texttt{JCheckBox} (do sterowania filtrami wyświetlania). Układ komponentów zarządzany jest przez \texttt{BoxLayout}. Przycisk zapisu współrzędnych implementuje dynamiczną walidację granic okna w czasie rzeczywistym – wykorzystuje metody \texttt{getWidth()} oraz \texttt{getHeight()} obiektu \texttt{GraphCanvas}, co skutecznie zapobiega przesunięciu wierzchołków poza renderowany obszar. Z poziomu tego panelu uruchamiany jest również bezpośrednio moduł obliczeniowy C w środowisku WSL przy użyciu \texttt{ProcessBuilder}, co eliminuje konieczność ręcznego obsługiwania konsoli.
 
 \section{Logika Sterująca (Controller)}
 Zadaniem klas z tego pakietu jest reagowanie na akcje użytkownika. Obiekty kontrolera implementują interfejsy nasłuchiwaczy z biblioteki Swing.
@@ -94,12 +92,21 @@ Główny mózg operacji. Podpina \texttt{ActionListener} do przycisków w \textt
 \section{Przetwarzanie Danych Wejściowych (Parser)}
 Aby zapewnić poprawną komunikację między modułem napisanym w języku C a aplikacją w języku Java, zaimplementowano dedykowany moduł parsujący.
 
-\subsection{Klasa FileParser}
+\subsection{Klasa GraphParser}
 Odpowiada za wejście/wyjście (I/O). Jej zadaniem jest odczyt plików wynikowych dostarczonych przez program w C i przetworzenie ich na obiekty Javy.
 \begin{itemize}
     \item \textbf{Odczyt formatu .txt:} Używa klas \texttt{BufferedReader} i \texttt{Scanner} do sekwencyjnego czytania linii, rozdzielania ich po znakach spacji i konwersji ciągów znaków na typy liczbowe \texttt{Integer} oraz \texttt{Double}.
-    \item \textbf{Odczyt formatu .bin:} Używa \texttt{DataInputStream} do bezpośredniego wczytywania bajtów, co przyspiesza proces ładowania dużych struktur grafowych.
-    \item \textbf{Walidacja:} Moduł obsługuje wyjątki \texttt{IOException} oraz \texttt{NumberFormatException}, aby w razie uszkodzonego pliku przerwać parsowanie i zgłosić błąd do kontrolera.
+    \item \textbf{Odczyt formatu .bin:} Używa bezpośredniego wczytywania bajtów, co przyspiesza proces ładowania dużych struktur grafowych z uwzględnieniem zapisu Little-Endian pochodzącego z C.
+    \item \textbf{Walidacja:} Moduł obsługuje wyjątki \texttt{IOException} oraz \texttt{NumberFormatException}, aby w razie uszkodzonego pliku przerwać parsowanie i zgłosić błąd.
 \end{itemize}
+
+\subsection{Parsowanie strumienia konsoli (Regex)}
+Aby wyeliminować problem niejednoznaczności ścieżek wyjściowych na styku Windows-Linux (WSL), aplikacja odczytuje bezpośrednio standardowy strumień wyjścia (\texttt{stdout}) procesu wykonującego kod C. Wyłapywane przez klasę \texttt{Scanner} logi są na bieżąco analizowane przez silnik wyrażeń regularnych (\texttt{Pattern}). Do wyłuskania identyfikatorów i współrzędnych w locie zastosowano bezpieczny wzorzec:
+
+\vspace{0.3cm}
+\noindent \verb|Wierzcho[^:]+?\s+(\d+):\s+X=([\d.-]+),\s+Y=([\d.-]+)|
+\vspace{0.3cm}
+
+Rozwiązanie to uodparnia program na niespójności z polskimi znakami diakrytycznymi w terminalu, umożliwiając natychmiastową aktualizację struktury \texttt{GraphModel} bez potrzeby korzystania z plików tymczasowych \texttt{.txt}.
 
 \end{document}
