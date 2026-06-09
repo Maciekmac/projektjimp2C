@@ -1,0 +1,87 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Pakiety dla języka polskiego ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+
+% --- Geometria strony i formatowanie ---
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\onehalfspacing
+
+% --- Strona tytułowa ---
+\title{\vspace*{3cm} \textbf{Dokumentacja Końcowa Projektu \\ Systemu Wizualizacji Grafów – Część JAVA}}
+\author{Mikołaj Dulny \\ Maciej Maciejewski}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Podsumowanie i Cel Projektu}
+Druga faza projektu obejmowała zaprojektowanie i implementację aplikacji okienkowej (typu desktop), której nadrzędnym zadaniem jest przejrzysta i interaktywna wizualizacja wielowymiarowych układów wierzchołków grafów planarnych. Aplikacja stanowi logiczne rozwinięcie i interfejs graficzny (frontend) dla silnika obliczeniowego napisanego w języku C.
+
+Projekt został zrealizowany w oparciu o język Java z wykorzystaniem standardowej biblioteki graficznej Swing. Całość architektury oparto na sprawdzonym wzorcu projektowym Model-View-Controller (MVC), co zapewniło wysoką skalowalność kodu, ułatwiło testowanie poszczególnych komponentów oraz pozwoliło na całkowite odseparowanie logiki biznesowej od warstwy prezentacji.
+
+Największym osiągnięciem projektowym było pokonanie bariery systemowej i stworzenie płynnego, wieloplatformowego pomostu komunikacyjnego. Pozwoliło to na bezproblemowe sterowanie silnikiem z poziomu systemu Windows, podczas gdy same obliczenia wykonywane są w izolowanym podsystemie Windows Subsystem for Linux (WSL).
+
+\section{Realizacja Warstwy Wizualnej (GUI)}
+Interfejs użytkownika został zaprojektowany z naciskiem na ergonomię i intuicyjność. W ramach prac nad modułem graficznym zrealizowano następujące kluczowe elementy:
+
+\subsection{Autorski Moduł Renderujący}
+Zrezygnowano z gotowych bibliotek do rysowania grafów na rzecz własnoręcznie zaimplementowanego płótna (\texttt{GraphCanvas}). Moduł ten, dziedziczący po \texttt{JPanel}, operuje bezpośrednio na zaawansowanym API \texttt{Graphics2D}.
+\begin{itemize}
+    \item \textbf{Antialiasing:} Wdrożono sprzętowe wygładzanie krawędzi, co znacząco poprawiło estetykę i czytelność przecinających się linii oraz okręgów reprezentujących wierzchołki.
+    \item \textbf{Dynamiczne centrowanie (Bounding Box):} Opracowano algorytm matematyczny, który na żądanie wyznacza obszar graniczny rysowanego grafu, wylicza jego środek ciężkości i wektorowo przesuwa cały układ współrzędnych tak, aby idealnie wypełniał on dostępne okno aplikacji.
+    \item \textbf{Skalowanie (Zoom):} Dodano płynne skalowanie widoku w czasie rzeczywistym przy użyciu macierzy transformacji lub bezpośredniego przelicznika punktowego powiązanego z suwakiem w panelu bocznym.
+\end{itemize}
+
+\subsection{Interakcja i Edycja w Czasie Rzeczywistym}
+Aplikacja przestała być jedynie statyczną przeglądarką plików, stając się pełnoprawnym edytorem.
+\begin{itemize}
+    \item \textbf{Drag \& Drop:} Wdrożono w pełni responsywną obsługę zdarzeń kursora (\texttt{MouseAdapter}). Użytkownik ma możliwość manualnego chwytania, przeciągania i upuszczania wybranych wierzchołków na płótnie, co pozwala na ręczne ,,rozplątywanie'' skomplikowanych układów.
+    \item \textbf{Bezpieczna edycja numeryczna:} Użytkownik może z precyzją co do ułamka zmieniać współrzędne w panelu bocznym. Pola tekstowe zostały zabezpieczone – wbudowana walidacja natychmiast wychwytuje błędy ludzkie (np. próby wpisania liter), blokuje wprowadzenie ich do modelu i informuje użytkownika o błędzie.
+\end{itemize}
+
+\section{Nowatorskie Podejście do Integracji (Pipeline i Regex)}
+Fundamentalnym problemem podczas integracji modułu Javy (Windows) z modułem C (Linux/WSL) były konflikty w ścieżkach dostępu do plików oraz brak gwarancji poprawności zapisu na zamontowanych partycjach NT. Aby zniwelować te trudności, całkowicie zrezygnowano z klasycznego i uciążliwego mechanizmu szukania i podmieniania plików tymczasowych (\texttt{output.txt}).
+
+\subsection{Sterowanie procesami potomnymi}
+Wykorzystano zaawansowany obiekt biblioteki standardowej Javy – \texttt{ProcessBuilder}. Java inicjuje proces interpretera \texttt{bash}, po czym przekazuje mu odpowiednio sformatowane, bezwzględne polecenia wywołujące silnik C w docelowym folderze. Java całkowicie przejmuje rolę nadrzędnego kontrolera środowiska.
+
+\subsection{Przetwarzanie strumieniowe ,,w locie''}
+Zamiast obciążać dysk twardy operacjami I/O, aplikacja tworzy wirtualny rurociąg (ang. \textit{pipeline}). Odbiera ona w czasie rzeczywistym standardowy strumień wyjścia (\texttt{stdout}) emitowany przez pracujący w tle program C.
+
+\subsection{Analiza Maszyną Stanów (Regex)}
+Każda linia logów przechwycona ze strumienia jest natychmiast weryfikowana przez silnik \textbf{Wyrażeń Regularnych (RegEx)}. Zastosowany wzorzec parsujący:
+
+\begin{verbatim}
+Wierzcho[^:]+?\s+(\d+):\s+X=([\d.-]+),\s+Y=([\d.-]+)
+\end{verbatim}
+
+jest rozwiązaniem wysoce niezawodnym. Pozwoliło to na ominięcie problemów ze znakami diakrytycznymi (np. polskie znaki zmieniane przez konsolę na artefakty) oraz ignorowanie zbędnych białych znaków. Silnik wychwytuje wyłącznie to, co jest kluczowe z punktu widzenia modelu: identyfikator wierzchołka (grupa 1), pozycję X (grupa 2) oraz pozycję Y (grupa 3). Odczytane dane trafiają do pamięci w ułamku sekundy, oferując natychmiastowe odświeżenie ekranu, pozbawione jakichkolwiek opóźnień związanych z systemem plików.
+
+\section{Zarządzanie Danymi (Wejście / Wyjście)}
+Mimo stworzenia bezpośredniego połączenia obu środowisk, aplikacja w pełni zachowała zdolność do pracy jako niezależny byt.
+\begin{itemize}
+    \item \textbf{Formaty plików:} Zaimplementowano odporne na uszkodzenia parsery potrafiące odtworzyć graf z tradycyjnych plików tekstowych, a także superszybki parser operujący na strumieniach bajtów, dedykowany plikom binarnym (\texttt{.bin}), z poszanowaniem architektury Little-Endian natywnej dla środowiska C.
+    \item \textbf{Eksport wyników:} Zmodyfikowany graf może zostać na żądanie wyeksportowany do nowego pliku współrzędnych. Ponadto wprowadzono możliwość natychmiastowego zrzutu wizualnej reprezentacji płótna roboczego do bezstratnego formatu rastrowego \texttt{.png}, co znacząco ułatwia proces raportowania.
+\end{itemize}
+
+\section{Wnioski i Perspektywy Rozwoju}
+Opracowany system w całości i z nadwyżką spełnia rygorystyczne założenia stawiane w dokumentacji początkowej. Aplikacja charakteryzuje się bardzo wysoką stabilnością działania, natychmiastową responsywnością i jest całkowicie bezpieczna od niespodziewanych wycieków pamięci oraz wyjątków typu \texttt{NullPointerException}.
+
+Zastosowanie wzorców obiektowych oraz odseparowanie procesu parsowania od renderowania sprawia, że rozwiązanie to jest wysoce skalowalne. W przyszłości aplikacja może zostać w prosty sposób rozbudowana o obsługę grafów skierowanych, animację przebiegu algorytmów obliczeniowych (tzw. ,,krok po kroku'') lub implementację kolejnych metod rozkładu przestrzennego bez konieczności jakiejkolwiek ingerencji w dotychczasową warstwę graficzną.
+
+\end{document}
